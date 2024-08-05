@@ -1,0 +1,100 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+# Java
+*.class
+*.jar
+*.war
+*.log
+*.swp
+*.swo
+
+# Spring Boot
+*.class
+*.jar
+*.war
+target/
+build/
+
+# Environment configuration files
+*.yml
+*.yaml
+*.properties
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# Eclipse
+.settings/
+.classpath
+.project
+
+# Maven
+/.mvn/
+target/
+
+# Gradle
+.gradle/
+build/
+
+# MySQL
+*.sql
+*.db
+
+# MyBatis
+*.mybatis/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# IDE specific files
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Other
+*.user
+*.suo
+*.userprefs
