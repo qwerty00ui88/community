@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Community</title>
+<title>👋 Hi️ Community</title>
 <%-- Bootstrap --%>
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
@@ -17,8 +17,11 @@
 	src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
 	integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
 	crossorigin="anonymous"></script>
-<%-- CSS --%>
+<%-- Common CSS --%>
 <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+<%-- Conditional CSS --%>
+<link rel="stylesheet" type="text/css"
+	href="/static/css/${viewName}.css">
 </head>
 <body>
 	<div class="container">

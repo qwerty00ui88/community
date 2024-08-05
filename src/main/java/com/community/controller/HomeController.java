@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
 	
 	@GetMapping("/")
-	public String test3(Model model) {
-		model.addAttribute("viewName", "home/home");
+	public String homeView(Model model) {
+		model.addAttribute("viewName", "include/home");
 		return "template/layout";
 	}
 	
