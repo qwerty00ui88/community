@@ -21,6 +21,16 @@
 <link rel="stylesheet" type="text/css" href="/static/css/style.css">
 </head>
 <body>
-	<jsp:include page="../${viewName}.jsp" />
+	<div class="container">
+		<header class="text-center mb-4">
+			<jsp:include page="../common/header.jsp" />
+		</header>
+		<section>
+			<jsp:include page="../${viewName}.jsp" />
+		</section>
+		<footer class="footer text-center mt-4">
+			<jsp:include page="../common/footer.jsp" />
+		</footer>
+	</div>
 </body>
 </html>
