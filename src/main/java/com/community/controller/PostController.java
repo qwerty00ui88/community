@@ -5,19 +5,22 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+@RequestMapping("/post")
 @Controller
-public class UserController {
+public class PostController {
 
-	@GetMapping("/login")
-	public String loginView(Model model) {
-		model.addAttribute("viewName", "include/login");
+	@GetMapping("/1")
+	public String getPost(Model model) {
+		model.addAttribute("viewName", "include/viewPost");
 		return "template/layout";
 	}
-
-	@GetMapping("/signup")
-	public String signupView(Model model) {
-		model.addAttribute("viewName", "include/signup");
+	
+	@GetMapping("/create")
+	public String createPost(Model model) {
+		model.addAttribute("viewName", "include/createPost");
 		return "template/layout";
 	}
+	
+	
 	
 }
