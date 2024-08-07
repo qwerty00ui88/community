@@ -14,13 +14,11 @@ public class PostController {
 		model.addAttribute("viewName", "include/viewPost");
 		return "template/layout";
 	}
-	
+
 	@GetMapping("/create")
 	public String createPost(Model model) {
 		model.addAttribute("viewName", "include/createPost");
 		return "template/layout";
 	}
-	
-	
-	
+
 }

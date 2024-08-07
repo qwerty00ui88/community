@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.community.mapper.UserMapper">
+
+	<select id="getUserProfile"
+		resultType="com.community.dto.UserDTO">
+		SELECT 
+			id, name, nickname, password, status, isWithDraw, createdAt, updatedAt
+		FROM user
+		WHERE id = #{id}
+	</select>
+
+	<insert id="insertUserProfile"
+		parameterType="com.community.dto.UserDTO">
+		INSERT INTO user (name, nickname, password, status, isWithDraw)
+		VALUES (#{name}, #{nickname}, #{password}, #{status}, #{isWithDraw})
+	</insert>
+
+	<update id="updateUserProfile"
+		parameterType="com.community.dto.UserDTO">
+		UPDATE user
+		SET password=#{password},
+		nickname=#{nickname},
+		isWithDraw=#{isWithDraw},
+		status=#{status}
+		WHERE id = #{id}
+	</update>
+
+	<delete id="deleteUserProfile">
+		DELETE
+		FROM user
+		WHERE id = #{id}
+	</delete>
+
+	<insert id="register"
+		parameterType="com.community.dto.UserDTO">
+		INSERT INTO user (name, nickname, password, status, isWithDraw)
+		VALUES (#{name}, #{nickname}, #{password}, #{status}, #{isWithDraw})
+	</insert>
+
+	<select id="findByIdAndPassword"
+		resultType="com.community.dto.UserDTO">
+		SELECT id, name, nickname, password, status, isWithDraw, createdAt, updatedAt
+		FROM user
+		WHERE userId = #{id}
+		AND passWord = #{password}
+		AND status != 'DELETED'
+	</select>
+	
+	<select id="findByNicknameAndPassword"
+		resultType="com.community.dto.UserDTO">
+		SELECT id, name, nickname, password, status, isWithDraw, createdAt, updatedAt
+		FROM user
+		WHERE nickname = #{nickname}
+		AND passWord = #{password}
+		AND status != 'DELETED'
+	</select>
+
+	<select id="nicknameCheck" resultType="int">
+		SELECT COUNT(id)
+		FROM user
+		WHERE nickname = #{nickname}
+	</select>
+
+	<update id="updatePassword"
+		parameterType="com.community.dto.UserDTO">
+		UPDATE user
+		SET passWord = #{password}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

@@ -37,6 +37,7 @@ dependencies {
 	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
 	implementation group: 'org.glassfish.web', name: 'jakarta.servlet.jsp.jstl', version: '3.0.0'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '3.3.2'
 }
 
 tasks.named('test') {
