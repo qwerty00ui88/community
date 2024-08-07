@@ -12,7 +12,7 @@
 		<ul class="navbar-nav ml-auto">
 			<c:choose>
 				<c:when
-					test="${not empty LOGIN_MEMBER_ID || not empty LOGIN_ADMIN_ID}">
+					test="${not empty LOGIN_USER_ID || not empty LOGIN_ADMIN_ID}">
 					<!-- 로그인 상태일 때 -->
 					<li class="nav-item"><a class="nav-link" href="/profile">프로필</a></li>
 					<li class="nav-item">

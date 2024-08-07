@@ -1,13 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-
 <div class="row">
 	<aside class="col-md-4">
 		<div class="sidebar">
 			<c:choose>
 				<c:when
-					test="${not empty LOGIN_MEMBER_ID || not empty LOGIN_ADMIN_ID}">
+					test="${not empty LOGIN_USER_ID || not empty LOGIN_ADMIN_ID}">
 					<div class="form-group">
 						<label>Welcome!</label>
 					</div>
@@ -48,7 +47,7 @@
 				<a class="nav-link active" href="#">전체</a> <a class="nav-link"
 					href="#">카테고리 1</a> <a class="nav-link" href="#">카테고리 2</a>
 			</nav>
-			<div class="form-group">
+			<div class="form-group mt-3">
 				<div class="input-group">
 					<input type="text" class="form-control" id="search"
 						placeholder="검색 단어">
@@ -57,8 +56,11 @@
 					</div>
 				</div>
 			</div>
-			<h2>글 목록</h2>
-			<ul class="list-group">
+			<div class="d-flex justify-content-between align-items-center mt-3">
+				<h2>글 목록</h2>
+				<a href="/post/create" class="btn btn-primary">글쓰기</a>
+			</div>
+			<ul class="list-group mt-3">
 				<li class="list-group-item"><a href="post1.jsp">게시글 1</a></li>
 				<li class="list-group-item"><a href="post2.jsp">게시글 2</a></li>
 				<li class="list-group-item"><a href="post3.jsp">게시글 3</a></li>

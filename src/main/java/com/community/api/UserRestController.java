@@ -45,7 +45,7 @@ public class UserRestController {
 	@PostMapping("/signup")
 	public ResponseEntity<LoginResponse> signUp(@RequestParam("name") String name,
 			@RequestParam("nickname") String nickname, @RequestParam("password") String password) {
-		UserDTO userDTO = new UserDTO(name, nickname, password, Status.DEFAULT, false);
+		UserDTO userDTO = new UserDTO(name, nickname, password, Status.USER, false);
 		if (UserDTO.hasNullDataBeforeSignup(userDTO)) {
 			LoginResponse response = new LoginResponse(LoginResponse.LoginStatus.FAIL, null);
 			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -61,13 +61,12 @@ public class UserRestController {
 		UserDTO userInfo = userService.login(nickname, password);
 
 		// 실패 시
-		if (userInfo == null) {
+		if (userInfo == null || userInfo.getStatus() == Status.DELETED) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(LoginResponse.fail());
 		}
 
 		// 성공 시
 		int id = userInfo.getId();
-
 		if (userInfo.getStatus() == Status.ADMIN) {
 			SessionUtil.setLoginAdminId(session, id);
 		} else {

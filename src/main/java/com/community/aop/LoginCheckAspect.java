@@ -46,7 +46,7 @@ public class LoginCheckAspect {
 		case ADMIN:
 			return SessionUtil.getLoginAdminId(session);
 		case USER:
-			return SessionUtil.getLoginMemberId(session);
+			return SessionUtil.getLoginUserId(session);
 		case ANY:
 			return SessionUtil.getLoginId(session);
 		default:
