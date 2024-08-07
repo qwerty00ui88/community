@@ -19,5 +19,10 @@ public class UserController {
 		model.addAttribute("viewName", "include/signup");
 		return "template/layout";
 	}
-	
+
+	@GetMapping("/profile")
+	public String profileView(Model model) {
+		model.addAttribute("viewName", "include/profile");
+		return "template/layout";
+	}
 }

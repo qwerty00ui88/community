@@ -22,7 +22,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class LoginCheckAspect {
 
-	@Around("@annotation(com.community.aop.LoginCheck) && @annotation(loginCheck)")
+	@Around("@annotation(com.community.aop.LoginCheck) && @annotation(LoginCheck)")
 	public Object loginCheck(ProceedingJoinPoint joinPoint, LoginCheck loginCheck) throws Throwable {
 		HttpSession session = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()
 				.getSession();

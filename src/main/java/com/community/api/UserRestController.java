@@ -90,9 +90,10 @@ public class UserRestController {
 		SessionUtil.clear(session);
 	}
 
-	@PatchMapping("/password")
+	@PatchMapping("/updatePassword")
 	@LoginCheck(type = LoginCheck.UserType.USER)
-	public ResponseEntity<LoginResponse> updateUserPassword(int id,
+	public ResponseEntity<LoginResponse> updateUserPassword(
+			@RequestParam("id") Integer id,
 			@RequestParam("beforePassword") String beforePassword,
 			@RequestParam("afterPassword") String afterPassword) {
 		try {
@@ -110,6 +111,7 @@ public class UserRestController {
 
 		try {
 			userService.deleteId(id, password);
+			SessionUtil.clear(session);
 			return ResponseEntity.ok(LoginResponse.success(null));
 		} catch (RuntimeException e) {
 			log.error("deleteID 실패", e);

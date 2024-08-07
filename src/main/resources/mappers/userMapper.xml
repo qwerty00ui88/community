@@ -44,8 +44,8 @@
 		resultType="com.community.dto.UserDTO">
 		SELECT id, name, nickname, password, status, isWithDraw, createdAt, updatedAt
 		FROM user
-		WHERE userId = #{id}
-		AND passWord = #{password}
+		WHERE id = #{id}
+		AND password = #{password}
 		AND status != 'DELETED'
 	</select>
 	
