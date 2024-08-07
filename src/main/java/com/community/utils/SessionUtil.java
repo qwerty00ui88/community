@@ -10,15 +10,15 @@ public class SessionUtil {
 	}
 
 	public static Integer getLoginId(HttpSession session) {
-        Integer memberId = getLoginMemberId(session);
-        if (memberId != null) {
-            return memberId;
-        }
-        return getLoginAdminId(session);
-    }
+		Integer memberId = getLoginMemberId(session);
+		if (memberId != null) {
+			return memberId;
+		}
+		return getLoginAdminId(session);
+	}
 
 	public static Integer getLoginMemberId(HttpSession session) {
-		return (Integer)session.getAttribute(LOGIN_MEMBER_ID);
+		return (Integer) session.getAttribute(LOGIN_MEMBER_ID);
 	}
 
 	public static void setLoginMemberId(HttpSession session, int id) {
@@ -35,5 +35,9 @@ public class SessionUtil {
 
 	public static void clear(HttpSession session) {
 		session.invalidate();
+	}
+
+	public static boolean isLoggedIn(HttpSession session) {
+		return getLoginMemberId(session) != null || getLoginAdminId(session) != null;
 	}
 }

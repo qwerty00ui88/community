@@ -9,7 +9,7 @@ public interface UserService {
 
 	boolean isDuplicatedNickname(String nickname);
 
-	UserDTO getUserInfo(int id);
+	UserDTO getUserInfo(Integer id);
 
 	void updatePassword(int id, String beforePassword, String afterPassword);
 

@@ -23,8 +23,8 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@RestController
 @RequestMapping("/user")
+@RestController
 public class UserRestController {
 
 	private final UserServiceImpl userService;
@@ -34,6 +34,12 @@ public class UserRestController {
 	@Autowired
 	public UserRestController(UserServiceImpl userService) {
 		this.userService = userService;
+	}
+
+	@PostMapping("/isDuplicatedNickname")
+	public ResponseEntity<Boolean> isDuplicatedId(@RequestParam("nickname") String nickname) {
+		boolean isDuplicated = userService.isDuplicatedNickname(nickname);
+		return ResponseEntity.ok(isDuplicated);
 	}
 
 	@PostMapping("/signup")
@@ -72,28 +78,24 @@ public class UserRestController {
 		return ResponseEntity.ok(loginResponse);
 	}
 
-	@GetMapping("/my-info")
-	public ResponseEntity<UserDTO> memberInfo(HttpSession session) {
-		Integer id = SessionUtil.getLoginId(session);
-
-		if (id == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
-
-		UserDTO memberInfo = userService.getUserInfo(id);
-		return ResponseEntity.ok(memberInfo);
-	}
-
 	@PostMapping("/logout")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void logout(HttpSession session) {
 		SessionUtil.clear(session);
 	}
 
+	@LoginCheck
+	@GetMapping("/my-info")
+	public ResponseEntity<UserDTO> memberInfo(@RequestParam(name = "id", required = false) Integer id,
+			HttpSession session) {
+
+		UserDTO memberInfo = userService.getUserInfo(id);
+		return ResponseEntity.ok(memberInfo);
+	}
+
+	@LoginCheck
 	@PatchMapping("/updatePassword")
-	@LoginCheck(type = LoginCheck.UserType.USER)
-	public ResponseEntity<LoginResponse> updateUserPassword(
-			@RequestParam("id") Integer id,
+	public ResponseEntity<LoginResponse> updateUserPassword(@RequestParam(name = "id", required = false) Integer id,
 			@RequestParam("beforePassword") String beforePassword,
 			@RequestParam("afterPassword") String afterPassword) {
 		try {
@@ -105,9 +107,10 @@ public class UserRestController {
 		}
 	}
 
+	@LoginCheck
 	@DeleteMapping("/deleteId")
-	public ResponseEntity<LoginResponse> deleteId(@RequestParam("password") String password, HttpSession session) {
-		Integer id = SessionUtil.getLoginMemberId(session);
+	public ResponseEntity<LoginResponse> deleteId(@RequestParam(name = "id", required = false) Integer id,
+			@RequestParam("password") String password, HttpSession session) {
 
 		try {
 			userService.deleteId(id, password);
@@ -119,9 +122,4 @@ public class UserRestController {
 		}
 	}
 
-	@PostMapping("/isDuplicatedNickname")
-	public ResponseEntity<Boolean> isDuplicatedId(@RequestParam("nickname") String nickname) {
-		boolean isDuplicated = userService.isDuplicatedNickname(nickname);
-		return ResponseEntity.ok(isDuplicated);
-	}
 }

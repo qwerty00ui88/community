@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDTO getUserInfo(int id) {
+	public UserDTO getUserInfo(Integer id) {
 		return UserMapper.getUserProfile(id);
 	}
 

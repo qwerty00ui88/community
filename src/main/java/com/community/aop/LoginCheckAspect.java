@@ -7,6 +7,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -22,27 +24,60 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class LoginCheckAspect {
 
-	@Around("@annotation(com.community.aop.LoginCheck) && @annotation(LoginCheck)")
+	@Around("@annotation(com.community.aop.LoginCheck) && @annotation(loginCheck)")
 	public Object loginCheck(ProceedingJoinPoint joinPoint, LoginCheck loginCheck) throws Throwable {
-		HttpSession session = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest()
-				.getSession();
+		HttpSession session = getCurrentHttpSession();
 
 		Integer id = getSessionId(session, loginCheck.type());
 		if (id == null) {
-			log.info("Unauthorized access attempt: " + joinPoint.toString());
-			throw new HttpStatusCodeException(HttpStatus.UNAUTHORIZED, "로그인한 id값을 확인해주세요.") {
-			};
+			logUnauthorizedAccess(joinPoint);
+			throwUnauthorizedException();
 		}
 
-		return proceedWithModifiedArgs(joinPoint, id);
+		return proceedWithArgsBasedOnControllerType(joinPoint, id);
+	}
+
+	private HttpSession getCurrentHttpSession() {
+		return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getSession();
 	}
 
 	private Integer getSessionId(HttpSession session, LoginCheck.UserType userType) {
-		if (userType == LoginCheck.UserType.ADMIN) {
+		switch (userType) {
+		case ADMIN:
 			return SessionUtil.getLoginAdminId(session);
-		} else {
+		case USER:
 			return SessionUtil.getLoginMemberId(session);
+		case ANY:
+			return SessionUtil.getLoginId(session);
+		default:
+			return null;
 		}
+	}
+
+	private void logUnauthorizedAccess(ProceedingJoinPoint joinPoint) {
+		log.info("Unauthorized access attempt: " + joinPoint.toString());
+	}
+
+	private void throwUnauthorizedException() throws HttpStatusCodeException {
+		throw new HttpStatusCodeException(HttpStatus.UNAUTHORIZED, "로그인한 id값을 확인해주세요.") {
+		};
+	}
+
+	private Object proceedWithArgsBasedOnControllerType(ProceedingJoinPoint joinPoint, Integer id) throws Throwable {
+		if (isRestController(joinPoint)) {
+			return proceedWithModifiedArgs(joinPoint, id);
+		} else if (isController(joinPoint)) {
+			return joinPoint.proceed();
+		}
+		return joinPoint.proceed(); // 기본적으로 원래의 인수로 진행
+	}
+
+	private boolean isRestController(ProceedingJoinPoint joinPoint) {
+		return joinPoint.getTarget().getClass().isAnnotationPresent(RestController.class);
+	}
+
+	private boolean isController(ProceedingJoinPoint joinPoint) {
+		return joinPoint.getTarget().getClass().isAnnotationPresent(Controller.class);
 	}
 
 	private Object proceedWithModifiedArgs(ProceedingJoinPoint joinPoint, Integer id) throws Throwable {
