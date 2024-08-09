@@ -38,8 +38,7 @@
 		$("#nav-logoutForm").on("submit", function(e) {
 			e.preventDefault();
 			$.post("/user/logout").always(function() {
-				console.log("뭐");
-				location.reload();
+				location.href = "/";
 			})
 		})
 	})

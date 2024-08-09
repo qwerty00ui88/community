@@ -4,9 +4,7 @@
 
 <div class="container mt-5">
 	<div class="profile-header">
-		<img src="profile-image-url" alt="프로필 이미지" class="profile-image">
-		<h2 class="mt-3">사용자 닉네임</h2>
-		<p class="text-muted">사용자 이메일</p>
+		<h2 class="mt-3">${profile.user.nickname}</h2>
 	</div>
 	<div class="row">
 		<div class="col-md-4">
@@ -14,13 +12,13 @@
 				<div class="card-header">프로필 정보</div>
 				<div class="card-body">
 					<p>
-						<strong>이름:</strong> 사용자 이름
+						<strong>이름:</strong> ${profile.user.name}
 					</p>
 					<p>
-						<strong>가입 날짜:</strong> 가입 날짜
+						<strong>가입 날짜:</strong> ${profile.user.createdAt}
 					</p>
 					<p>
-						<strong>활동 상태:</strong> 활동 상태
+						<strong>활동 상태:</strong> ${profile.user.status}
 					</p>
 				</div>
 			</div>
@@ -29,13 +27,13 @@
 				<div class="card-body">
 					<form id="updatePasswordForm">
 						<div class="form-group">
-							<label for="currentPassword">현재 비밀번호</label> <input
-								type="password" class="form-control" id="currentPassword"
-								name="currentPassword" required>
+							<label for="beforePassword">현재 비밀번호</label> <input
+								type="password" class="form-control" id="beforePassword"
+								name="beforePassword" required>
 						</div>
 						<div class="form-group">
-							<label for="newPassword">새 비밀번호</label> <input type="password"
-								class="form-control" id="newPassword" name="newPassword"
+							<label for="afterPassword">새 비밀번호</label> <input type="password"
+								class="form-control" id="afterPassword" name="afterPassword"
 								required>
 						</div>
 						<button type="submit" class="btn btn-primary btn-block">비밀번호
@@ -62,11 +60,12 @@
 				<h4>내가 쓴 글</h4>
 			</div>
 			<ul class="list-group mb-4">
-				<li class="list-group-item"><a href="post1.jsp">게시글 1</a></li>
-				<li class="list-group-item"><a href="post2.jsp">게시글 2</a></li>
-				<li class="list-group-item"><a href="post3.jsp">게시글 3</a></li>
-				<!-- 더 많은 게시글을 추가할 수 있습니다. -->
+				<c:forEach items="${profile.postList}" var="post">
+					<li class="list-group-item"><a href="/board/${post.id}">${post.title}</a>
+					</li>
+				</c:forEach>
 			</ul>
+
 			<div class="section-header">
 				<h4>내가 쓴 댓글</h4>
 			</div>
@@ -89,7 +88,7 @@
 			if (!confirm("정말로 비밀번호를 변경하시겠습니까?")) {
 				return;
 			}
-			
+
 			const beforePassword = $("#beforePassword").val();
 			const afterPassword = $("#afterPassword").val();
 
