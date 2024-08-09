@@ -1,9 +1,8 @@
 package com.community.dto;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.community.entity.PostEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,14 +11,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Builder
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardDTO {
-	private PostEntity post;
+@Builder(toBuilder = true)
+public class CommentDTO {
+	private int id;
+	private int postId;
+	private int userId;
+	private Integer parentId;
+	private String contents;
+	private ZonedDateTime createdAt;
+	private ZonedDateTime updatedAt;
 	private UserDTO writer;
-	private List<CommentDTO> commentList;
+	private List<CommentDTO> replyList;
 }

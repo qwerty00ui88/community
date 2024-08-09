@@ -34,7 +34,7 @@
 				</c:otherwise>
 			</c:choose>
 			<hr>
-			<h3>추천수가 높은순 리스트</h3>
+			<h3>조회수 높은 게시글</h3>
 			<ul class="list-group">
 				<c:forEach items="${homeDTO.mostViewedPostList}" var="post">
 					<li class="list-group-item"><a href="/board/${post.id}">${post.title}</a>

@@ -2,6 +2,7 @@ package com.community.dto;
 
 import java.util.List;
 
+import com.community.entity.CommentEntity;
 import com.community.entity.PostEntity;
 
 import lombok.AllArgsConstructor;
@@ -21,4 +22,5 @@ public class ProfileDTO {
 
 	private UserDTO user;
 	private List<PostEntity> postList;
+	private List<CommentEntity> commentList;
 }

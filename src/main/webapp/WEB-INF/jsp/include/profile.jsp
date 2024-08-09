@@ -70,11 +70,11 @@
 				<h4>내가 쓴 댓글</h4>
 			</div>
 			<ul class="list-group">
-				<li class="list-group-item">댓글 내용 1</li>
-				<li class="list-group-item">댓글 내용 2</li>
-				<li class="list-group-item">댓글 내용 3</li>
-				<!-- 더 많은 댓글을 추가할 수 있습니다. -->
-			</ul>
+    		<c:forEach items="${profile.commentList}" var="comment">
+        		<li class="list-group-item"><a href="/board/${comment.postId}">${comment.contents}</a></li>
+    		</c:forEach>
+</ul>
+
 		</div>
 	</div>
 

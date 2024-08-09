@@ -30,7 +30,7 @@ public class PostRestController {
 	}
 
 	// 게시글 생성
-	@LoginCheck(type = LoginCheck.UserType.USER)
+	@LoginCheck
 	@PostMapping("/create")
 	public ResponseEntity<CommonResponse> createPost(@RequestParam(name = "id", required = false) Integer userId,
 			@RequestParam("categoryId") int categoryId, @RequestParam("title") String title,
@@ -41,7 +41,7 @@ public class PostRestController {
 	}
 
 	// 게시글 수정
-	@LoginCheck(type = LoginCheck.UserType.USER)
+	@LoginCheck
 	@PutMapping("/{postId}")
 	public ResponseEntity<CommonResponse> updatePosts(@RequestParam(name = "id", required = false) Integer userId,
 			@PathVariable("postId") int postId, @RequestParam("categoryId") int categoryId,
@@ -52,7 +52,7 @@ public class PostRestController {
 	}
 
 	// 게시글 삭제
-	@LoginCheck(type = LoginCheck.UserType.USER)
+	@LoginCheck
 	@DeleteMapping("/{postId}")
 	public ResponseEntity<CommonResponse> deletePostByUserIdPostId(
 			@RequestParam(name = "id", required = false) Integer userId, @PathVariable(name = "postId") int postId) {

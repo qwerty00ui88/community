@@ -37,14 +37,17 @@ public class BoardController {
 	@GetMapping("/{postId}")
 	public String readPostView(@PathVariable("postId") Integer postId, Model model) {
 		BoardDTO boardDTO = new BoardDTO();
-		// 게시글
+		// 조회수 증가
 		PostEntity post = postService.updateViews(postId);
+		
+		// 게시글
 		boardDTO.setPost(post);
 
 		// 작성자
 		boardDTO.setWriter(userService.getUserInfo(post.getUserId()));
 
 		// 댓글
+		boardDTO.setCommentList(commentService.getCommentListWithRepliesByPostId(postId));
 
 		model.addAttribute("boardDTO", boardDTO);
 		model.addAttribute("viewName", "include/readPost");

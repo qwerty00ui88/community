@@ -1,7 +1,5 @@
 package com.community.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,8 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.community.aop.LoginCheck;
 import com.community.dto.ProfileDTO;
-import com.community.dto.UserDTO;
-import com.community.entity.PostEntity;
+import com.community.service.impl.CommentServiceImpl;
 import com.community.service.impl.PostServiceImpl;
 import com.community.service.impl.UserServiceImpl;
 
@@ -23,6 +20,9 @@ public class ProfileController {
 	
 	@Autowired
 	private UserServiceImpl userService;
+	
+	@Autowired
+	private CommentServiceImpl commentService;
 
 	@LoginCheck
 	@GetMapping("/profile")
@@ -35,6 +35,8 @@ public class ProfileController {
 		profile.setPostList(postService.getPostListByUserId(userId));
 		
 		// 댓글 정보
+		profile.setCommentList(commentService.getCommentListByUserId(userId));
+		
 		model.addAttribute("profile", profile);
 		model.addAttribute("viewName", "include/profile");
 		return "template/layout";
