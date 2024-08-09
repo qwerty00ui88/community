@@ -31,7 +31,6 @@ public class UserRestController {
 	private static final ResponseEntity<LoginResponse> FAIL_RESPONSE = ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(LoginResponse.fail());
 
-	@Autowired
 	public UserRestController(UserServiceImpl userService) {
 		this.userService = userService;
 	}
@@ -56,8 +55,10 @@ public class UserRestController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponse> login(@RequestParam("nickname") String nickname,
-			@RequestParam("password") String password, HttpSession session) {
+	public ResponseEntity<LoginResponse> login(
+			@RequestParam("nickname") String nickname,
+			@RequestParam("password") String password, 
+			HttpSession session) {
 		UserDTO userInfo = userService.login(nickname, password);
 
 		// 실패 시
