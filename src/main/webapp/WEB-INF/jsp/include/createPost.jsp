@@ -10,11 +10,11 @@
 				id="title" name="title" placeholder="제목 입력" required>
 		</div>
 		<div class="form-group">
-			<label for="category">카테고리</label> <select class="form-control"
-				id="category" name="category" required>
-				<option value="1">카테고리 1</option>
-				<option value="2">카테고리 2</option>
-				<option value="3">카테고리 3</option>
+			<label for="category">카테고리</label> 
+			<select class="form-control" id="category" name="category" required>
+	    		<c:forEach var="category" items="${categoryList}">
+	        		<option value="${category.id}">${category.name}</option>
+	    		</c:forEach>
 			</select>
 		</div>
 		<div class="form-group">
@@ -34,8 +34,6 @@
 			const title = $("#title").val();
 			const categoryId = $("#category").val();
 			const contents = $("#contents").val();
-
-			console.log(title, categoryId, contents);
 
 			$.post("/api/post/create", {
 			    "title": title,

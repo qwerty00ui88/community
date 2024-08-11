@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.community.mapper.PostMapper">
+
+	<insert id="createPost" parameterType="com.community.dto.PostDTO" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO post (userId,
+		categoryId, title, contents)
+		VALUES (#{userId}, #{categoryId},
+		#{title}, #{contents})
+	</insert>
+
+	<select id="selectPostById"
+		resultType="com.community.dto.PostDTO">
+		SELECT `id`,
+		`userId`,
+		`categoryId`,
+		`title`,
+		`contents`,
+		`views`,
+		`createdAt`,
+		`updatedAt`
+		FROM `post`
+		WHERE id = #{postId}
+	</select>
+
+	<select id="selectMyPostList"
+		resultType="com.community.dto.PostDTO">
+		SELECT `id`,
+		`userId`,
+		`categoryId`,
+		`title`,
+		`contents`,
+		`views`,
+		`createdAt`,
+		`updatedAt`
+		FROM `post`
+		WHERE userId = #{userId}
+	</select>
+
+<!-- 	<update id="updateProducts"
+		parameterType="com.community.dto.PostDTO">
+		UPDATE post
+		SET categoryId = #{categoryId},
+		title =
+		#{title},
+		contents = #{contents}
+	</update> -->
+
+	<delete id="deletePostByUserIdPostId">
+		DELETE FROM post
+		WHERE `id` = #{postId}
+		AND `userId` = #{userId}
+	</delete>
+
+	<select id="selectPostList"
+		resultType="com.community.dto.PostDTO">
+		SELECT `id`,
+		`userId`,
+		`categoryId`,
+		`title`,
+		`contents`,
+		`views`,
+		`createdAt`,
+		`updatedAt`
+		FROM `post`
+		ORDER BY `createdAt` DESC
+	</select>
+	
+	<select id="selectMostViewedPostList"
+		resultType="com.community.dto.PostDTO">
+		SELECT `id`,
+		`userId`,
+		`categoryId`,
+		`title`,
+		`contents`,
+		`views`,
+		`createdAt`,
+		`updatedAt`
+		FROM `post`
+		ORDER BY `views` DESC 
+	</select>
+	
+	<select id="selectPostListByCategory"
+		resultType="com.community.dto.PostDTO">
+		SELECT `id`,
+		`userId`,
+		`categoryId`,
+		`title`,
+		`contents`,
+		`views`,
+		`createdAt`,
+		`updatedAt`
+		FROM `post`
+		WHERE `categoryId` = #{categoryId}
+		ORDER BY `createdAt` DESC
+	</select>
+
+</mapper>

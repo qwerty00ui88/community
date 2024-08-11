@@ -11,22 +11,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.community.aop.LoginCheck;
-import com.community.dto.PostDTO;
 import com.community.dto.response.CommonResponse;
 import com.community.entity.PostEntity;
 import com.community.service.impl.PostServiceImpl;
-import com.community.service.impl.UserServiceImpl;
 
 @RequestMapping("api/post")
 @RestController
 public class PostRestController {
 
 	private final PostServiceImpl postService;
-	private final UserServiceImpl userService;
 
-	public PostRestController(PostServiceImpl postService, UserServiceImpl userService) {
+	public PostRestController(PostServiceImpl postService) {
 		this.postService = postService;
-		this.userService = userService;
 	}
 
 	// 게시글 생성
@@ -54,9 +50,19 @@ public class PostRestController {
 	// 게시글 삭제
 	@LoginCheck
 	@DeleteMapping("/{postId}")
-	public ResponseEntity<CommonResponse> deletePostByUserIdPostId(
+	public ResponseEntity<CommonResponse> deletePostByIdAndUserId(
 			@RequestParam(name = "id", required = false) Integer userId, @PathVariable(name = "postId") int postId) {
 		postService.deletePostByIdAndUserId(postId, userId);
+		CommonResponse commonResponse = new CommonResponse<>(HttpStatus.OK, "SUCCESS", "게시글 삭제 성공", null);
+		return ResponseEntity.ok(commonResponse);
+	}
+
+	// 관리자용 게시글 삭제
+	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+	@DeleteMapping("/admin/{postId}")
+	public ResponseEntity<CommonResponse> deletePostById(@RequestParam(name = "id", required = false) Integer userId,
+			@PathVariable(name = "postId") int postId) {
+		postService.deletePostById(postId);
 		CommonResponse commonResponse = new CommonResponse<>(HttpStatus.OK, "SUCCESS", "게시글 삭제 성공", null);
 		return ResponseEntity.ok(commonResponse);
 	}

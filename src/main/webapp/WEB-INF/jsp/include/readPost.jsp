@@ -3,39 +3,63 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-
 <div class="container view-post-container">
+	<!-- 게시글 -->
     <h2>${boardDTO.post.title}</h2>
     <div class="post-meta text-muted mb-4">
-        <span>작성자: <strong>${boardDTO.writer.nickname}</strong></span> | <span>작성일:
-            <strong>${fn:substring(boardDTO.post.createdAt.toString(), 0, 10)}</strong>
-        </span> | <span>조회수: <strong>${boardDTO.post.views}</strong></span>
+        <span>작성자: <strong>${boardDTO.writer.nickname}</strong></span> | 
+        <span>작성일: <strong>${fn:substring(boardDTO.post.createdAt.toString(), 0, 10)}</strong></span>
+        <c:if test="${boardDTO.post.status == 'EDITED'}">
+            <span class="text-muted">(edited)</span>
+        </c:if>
+        | <span>조회수: <strong>${boardDTO.post.views}</strong></span>
     </div>
+    
     <!-- 게시글 수정 및 삭제 버튼 -->
-    <c:if test="${boardDTO.post.userId == LOGIN_USER_ID || boardDTO.post.userId == LOGIN_ADMIN_ID}">
-	    <div class="text-right mb-4">
+    <div class="text-right mb-4">
+	    <c:if test="${boardDTO.post.userId == LOGIN_USER_ID || (LOGIN_ADMIN_ID != null && boardDTO.post.userId == LOGIN_ADMIN_ID)}">
 	        <button id="updatePostBtn" class="btn btn-outline-primary mr-2">게시글 수정</button>
+	    </c:if>
+	    <c:if test="${boardDTO.post.userId == LOGIN_USER_ID || LOGIN_ADMIN_ID != null}">
 	        <button id="deletePostBtn" class="btn btn-outline-danger">게시글 삭제</button>
-	    </div>
-    </c:if>
+	    </c:if>
+	</div>
     <div class="post-content">
         <p>${boardDTO.post.contents}</p>
     </div>
     <hr>
+    
+    <!-- 댓글 및 대댓글 -->
     <div class="comments">
         <h5>댓글</h5>
         <c:forEach items="${boardDTO.commentList}" var="comment">
             <div class="comment mb-3" data-comment-id="${comment.id}">
                 <div class="comment-meta text-muted">
-                    <span><strong>${comment.writer.nickname}</strong></span> | <span><strong><c:out value="${fn:substring(comment.createdAt.toString(), 0, 10)}"/></strong></span>
-                    <c:if test="${comment.writer.id == LOGIN_USER_ID || comment.writer.id == LOGIN_ADMIN_ID}">
-	                    <div class="float-right">
-	                        <button class="btn btn-sm text-secondary edit-comment-btn" data-comment-id="${comment.id}">수정</button>
-	                        <button class="btn btn-sm text-danger delete-comment-btn" data-comment-id="${comment.id}">삭제</button>
-	                    </div>
+                    <span><strong>${comment.writer.nickname}</strong></span> | 
+                    <span><strong><c:out value="${fn:substring(comment.createdAt.toString(), 0, 10)}"/></strong></span>
+                    <c:if test="${comment.status == 'EDITED'}">
+                        <span class="text-muted">(edited)</span>
                     </c:if>
+                    <!-- 댓글 수정 및 삭제 버튼 -->
+                    <div class="float-right">
+					    <c:if test="${(comment.writer.id == LOGIN_USER_ID || comment.writer.id == LOGIN_ADMIN_ID) && comment.status != 'DELETED'}">
+					        <button class="btn btn-sm text-secondary edit-comment-btn" data-comment-id="${comment.id}">수정</button>
+					    </c:if>
+					    <c:if test="${(comment.writer.id == LOGIN_USER_ID || LOGIN_ADMIN_ID != null) && comment.status != 'DELETED'}">
+					        <button class="btn btn-sm text-danger delete-comment-btn" data-comment-id="${comment.id}">삭제</button>
+					    </c:if>
+					</div>
                 </div>
-                <p class="comment-content">${comment.contents}</p>
+                <p class="comment-content">
+				    <c:choose>
+				        <c:when test="${comment.status == 'DELETED'}">
+				            ⚠ 삭제된 댓글입니다
+				        </c:when>
+				        <c:otherwise>
+				            ${comment.contents}
+				        </c:otherwise>
+				    </c:choose>
+				</p>
                 <div class="edit-comment-form" style="display: none;">
                     <div class="form-group">
                         <textarea class="form-control edit-comment-content" rows="2">${comment.contents}</textarea>
@@ -48,15 +72,31 @@
                     <c:forEach items="${comment.replyList}" var="reply">
                         <div class="reply mb-3" data-reply-id="${reply.id}">
                             <div class="reply-meta text-muted">
-                                <span><strong>${reply.writer.nickname}</strong></span> | <span><strong>${fn:substring(reply.createdAt.toString(), 0, 10)}</strong></span>
-                                <c:if test="${reply.writer.id == LOGIN_USER_ID || reply.writer.id == LOGIN_ADMIN_ID}">
-	                                <div class="float-right">
-	                                    <button class="btn btn-sm text-secondary edit-reply-btn" data-reply-id="${reply.id}">수정</button>
-	                                    <button class="btn btn-sm text-danger delete-reply-btn" data-reply-id="${reply.id}">삭제</button>
-	                                </div>
+                                <span><strong>${reply.writer.nickname}</strong></span> | 
+                                <span><strong>${fn:substring(reply.createdAt.toString(), 0, 10)}</strong></span>
+                                <c:if test="${reply.status == 'EDITED'}">
+                                    <span class="text-muted">(edited)</span>
                                 </c:if>
+                                <!-- 대댓글 수정 및 삭제 버튼 -->
+                                <div class="float-right">
+								    <c:if test="${(reply.writer.id == LOGIN_USER_ID || reply.writer.id == LOGIN_ADMIN_ID) && reply.status != 'DELETED'}">
+								        <button class="btn btn-sm text-secondary edit-comment-btn" data-comment-id="${reply.id}">수정</button>
+								    </c:if>
+								    <c:if test="${(reply.writer.id == LOGIN_USER_ID || LOGIN_ADMIN_ID != null) && reply.status != 'DELETED'}">
+								        <button class="btn btn-sm text-danger delete-comment-btn" data-comment-id="${reply.id}">삭제</button>
+								    </c:if>
+								</div>
                             </div>
-                            <p class="reply-content">${reply.contents}</p>
+                            <p class="reply-content">
+							    <c:choose>
+							        <c:when test="${reply.status == 'DELETED'}">
+							            ⚠ 삭제된 대댓글입니다
+							        </c:when>
+							        <c:otherwise>
+							            ${reply.contents}
+							        </c:otherwise>
+							    </c:choose>
+							</p>
                             <div class="edit-reply-form" style="display: none;">
                                 <div class="form-group">
                                     <textarea class="form-control edit-reply-content" rows="2">${reply.contents}</textarea>
@@ -66,18 +106,21 @@
                             </div>
                         </div>
                     </c:forEach>
+                    
                     <!-- 대댓글 작성 폼 -->
-					<form class="reply-form" style="display: none;" data-parent-id="${comment.id}">
-					    <div class="form-group">
-					        <textarea class="form-control reply-content" rows="2" placeholder="대댓글 내용을 입력하세요" required></textarea>
-					    </div>
-					    <button type="submit" class="btn btn-primary-custom">대댓글 작성</button>
-					    <button type="button" class="btn btn-secondary cancel-reply-btn">취소</button>
-					</form>
+                    <form class="reply-form" style="display: none;" data-parent-id="${comment.id}">
+                        <div class="form-group">
+                            <textarea class="form-control reply-content" rows="2" placeholder="대댓글 내용을 입력하세요" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom">대댓글 작성</button>
+                        <button type="button" class="btn btn-secondary cancel-reply-btn">취소</button>
+                    </form>
                 </div>
             </div>
         </c:forEach>
-        <form class="comment-form" action="createComment" method="post">
+        
+        <!-- 댓글 작성 폼 -->
+        <form class="comment-form">
             <div class="form-group">
                 <label for="commentContent">댓글 작성</label>
                 <textarea class="form-control" id="commentContent" name="commentContent" rows="3" placeholder="댓글 내용을 입력하세요" required></textarea>
@@ -88,10 +131,13 @@
 </div>
 
 
+
+
 <script>
 $(document).ready(function() {
     const postId = ${boardDTO.post.id};
-
+    const isAdmin = ${LOGIN_ADMIN_ID != null};
+    
     // 게시글 수정
     $("#updatePostBtn").on("click", function() {
         window.location.href = "/board/update/" + postId;
@@ -101,7 +147,7 @@ $(document).ready(function() {
     $("#deletePostBtn").on("click", function() {
         if (confirm("정말로 게시글을 삭제하시겠습니까?")) {
             $.ajax({
-                url: "/api/post/" + postId,
+                url: isAdmin ? `/api/post/admin/\${postId}` : `/api/post/\${postId}`,
                 type: "DELETE",
                 success: function(response) {
                     alert("게시글이 성공적으로 삭제되었습니다.");
@@ -117,6 +163,7 @@ $(document).ready(function() {
     // 댓글 및 대댓글 작성
     $(".comment-form, .reply-form").on("submit", function(e) {
         e.preventDefault();
+
         const parentId = $(this).hasClass('reply-form') ? $(this).data("parent-id") : null;
         const content = parentId ? $(this).find(".reply-content").val() : $("#commentContent").val();
 
@@ -160,9 +207,10 @@ $(document).ready(function() {
     // 댓글 삭제
     $(".delete-comment-btn").on("click", function() {
         const commentId = $(this).data("comment-id");
+        
         if (confirm("정말로 댓글을 삭제하시겠습니까?")) {
             $.ajax({
-                url: "/api/comment/" + commentId,
+                url: isAdmin ? `/api/comment/admin/\${commentId}` : `/api/comment/\${commentId}`,
                 type: "DELETE",
                 success: function(response) {
                     alert("댓글이 성공적으로 삭제되었습니다.");
@@ -180,7 +228,7 @@ $(document).ready(function() {
         const replyId = $(this).data("reply-id");
         if (confirm("정말로 대댓글을 삭제하시겠습니까?")) {
             $.ajax({
-                url: "/api/comment/" + replyId,
+                url: isAdmin ? `/api/comment/admin/\${replyId}` : `/api/comment/\${replyId}`,
                 type: "DELETE",
                 success: function(response) {
                     alert("대댓글이 성공적으로 삭제되었습니다.");

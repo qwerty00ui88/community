@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.community.dto.BoardDTO;
 import com.community.entity.PostEntity;
+import com.community.enums.CategoryStatus;
+import com.community.service.impl.CategoryServiceImpl;
 import com.community.service.impl.CommentServiceImpl;
 import com.community.service.impl.PostServiceImpl;
 import com.community.service.impl.UserServiceImpl;
@@ -26,9 +28,13 @@ public class BoardController {
 	@Autowired
 	private CommentServiceImpl commentService;
 
+	@Autowired
+	private CategoryServiceImpl categoryService;
+	
 	// 게시글 생성 페이지
 	@GetMapping("/create")
 	public String createPostView(Model model) {
+		model.addAttribute("categoryList", categoryService.getCategoryListByStatus(CategoryStatus.ACTIVE));
 		model.addAttribute("viewName", "include/createPost");
 		return "template/layout";
 	}
@@ -58,6 +64,7 @@ public class BoardController {
 	@GetMapping("/update/{postId}")
 	public String updatePostView(@PathVariable("postId") Integer postId, Model model) {
 		model.addAttribute("post", postService.getPostById(postId));
+		model.addAttribute("categoryList", categoryService.getCategoryListByStatus(CategoryStatus.ACTIVE));
 		model.addAttribute("viewName", "include/updatePost");
 		return "template/layout";
 	}

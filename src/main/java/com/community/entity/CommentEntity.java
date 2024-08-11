@@ -4,8 +4,12 @@ import java.time.ZonedDateTime;
 
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.community.enums.CommentStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,23 +31,28 @@ public class CommentEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	
+
 	@Column(name = "postId")
-    private int postId;
-	
+	private int postId;
+
 	@Column(name = "userId")
-    private int userId;
-	
+	private int userId;
+
 	@Column(name = "parentId")
-    private Integer parentId;
-	
-    private String contents;
-    
-    @UpdateTimestamp
+	private Integer parentId;
+
+	private String contents;
+
+	@Builder.Default
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
+	private CommentStatus status = CommentStatus.DEFAULT;
+
+	@UpdateTimestamp
 	@Column(name = "createdAt", updatable = false)
-    private ZonedDateTime createdAt;
-    
-    @UpdateTimestamp
+	private ZonedDateTime createdAt;
+
+	@UpdateTimestamp
 	@Column(name = "updatedAt")
-    private ZonedDateTime updatedAt;
+	private ZonedDateTime updatedAt;
 }

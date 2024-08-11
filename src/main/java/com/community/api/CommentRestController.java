@@ -25,19 +25,16 @@ import com.community.service.impl.UserServiceImpl;
 public class CommentRestController {
 
 	private final CommentServiceImpl commentService;
-	private final UserServiceImpl userService;
 
-	public CommentRestController(CommentServiceImpl commentService, UserServiceImpl userService) {
+	public CommentRestController(CommentServiceImpl commentService) {
 		this.commentService = commentService;
-		this.userService = userService;
 	}
 
 	// 댓글 생성
-	@PostMapping
 	@LoginCheck
+	@PostMapping
 	public ResponseEntity<CommonResponse<CommentEntity>> createComment(
-			@RequestParam(name = "id", required = false) Integer userId, 
-			@RequestParam("postId") int postId,
+			@RequestParam(name = "id", required = false) Integer userId, @RequestParam("postId") int postId,
 			@RequestParam(name = "parentId", required = false) Integer parentId,
 			@RequestParam("contents") String contents) {
 		CommentEntity comment = commentService.createComment(userId, postId, parentId, contents);
@@ -49,10 +46,8 @@ public class CommentRestController {
 	// 댓글 수정
 	@LoginCheck
 	@PutMapping("/{commentId}")
-	public ResponseEntity<CommonResponse> updateComment(
-			@RequestParam(name = "id", required = false) Integer userId,
-			@PathVariable("commentId") int commentId, 
-			@RequestParam("contents") String contents) {
+	public ResponseEntity<CommonResponse> updateComment(@RequestParam(name = "id", required = false) Integer userId,
+			@PathVariable("commentId") int commentId, @RequestParam("contents") String contents) {
 		CommentEntity comment = commentService.updateCommentByIdAndUserId(commentId, userId, contents);
 		CommonResponse commonResponse = new CommonResponse<CommentEntity>(HttpStatus.OK, "SUCCESS", "댓글 수정 성공",
 				comment);
@@ -62,13 +57,20 @@ public class CommentRestController {
 	// 댓글 삭제
 	@LoginCheck
 	@DeleteMapping("/{commentId}")
-	public ResponseEntity<CommonResponse> deleteComment(
-			@RequestParam(name = "id", required = false) Integer userId,
+	public ResponseEntity<CommonResponse> deleteCommentByIdAndUserId(
+			@RequestParam(name = "id", required = false) Integer userId, @PathVariable("commentId") int commentId) {
+		commentService.deleteCommentByIdAndUserId(commentId, userId);
+		CommonResponse commonResponse = new CommonResponse<CommentEntity>(HttpStatus.OK, "SUCCESS", "댓글 삭제 성공", null);
+		return ResponseEntity.ok(commonResponse);
+	}
+
+	// 관라자용 댓글 삭제
+	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+	@DeleteMapping("/admin/{commentId}")
+	public ResponseEntity<CommonResponse> deleteCommentById(@RequestParam(name = "id", required = false) Integer userId,
 			@PathVariable("commentId") int commentId) {
-		CommentEntity comment = commentService.updateCommentByIdAndUserId(commentId, userId,
-				"⚠ 해당 댓글은 작성자에 의해 삭제되었습니다.");
-		CommonResponse commonResponse = new CommonResponse<CommentEntity>(HttpStatus.OK, "SUCCESS", "댓글 삭제 성공",
-				comment);
+		commentService.deleteCommentById(commentId);
+		CommonResponse commonResponse = new CommonResponse<CommentEntity>(HttpStatus.OK, "SUCCESS", "댓글 삭제 성공", null);
 		return ResponseEntity.ok(commonResponse);
 	}
 

@@ -13,15 +13,12 @@
 		<div class="form-group">
 			<label for="category">카테고리</label> <select class="form-control"
 				id="category" name="category" required>
-				<option value="1"
-					<c:if test="${post.categoryId == 1}">selected</c:if>>카테고리
-					1</option>
-				<option value="2"
-					<c:if test="${post.categoryId == 2}">selected</c:if>>카테고리
-					2</option>
-				<option value="3"
-					<c:if test="${post.categoryId == 3}">selected</c:if>>카테고리
-					3</option>
+				<c:forEach var="category" items="${categoryList}">
+			        <option value="${category.id}" 
+			            <c:if test="${post.categoryId == category.id}">selected</c:if>>
+			            ${category.name}
+			        </option>
+    			</c:forEach>
 			</select>
 		</div>
 		<div class="form-group">
