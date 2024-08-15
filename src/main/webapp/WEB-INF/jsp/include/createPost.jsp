@@ -35,7 +35,7 @@
 			const categoryId = $("#category").val();
 			const contents = $("#contents").val();
 
-			$.post("/api/post/create", {
+			$.post("/api/post", {
 			    "title": title,
 			    "categoryId": categoryId,
 			    "contents": contents

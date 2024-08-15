@@ -16,7 +16,7 @@
 					<!-- 로그인 상태일 때 -->
 					<li class="nav-item"><a class="nav-link" href="/profile">프로필</a></li>
 					<li class="nav-item">
-						<form id="nav-logoutForm" action="/user/logout" method="post"
+						<form id="nav-logoutForm" action="/api/user/logout" method="post"
 							class="form-inline my-2 my-lg-0 d-flex justify-content-center">
 							<button id="logoutBtn" type="submit"
 								class="btn btn-link nav-link">로그아웃</button>
@@ -37,7 +37,7 @@
 		// 로그아웃
 		$("#nav-logoutForm").on("submit", function(e) {
 			e.preventDefault();
-			$.post("/user/logout").always(function() {
+			$.post("/api/user/logout").always(function() {
 				location.href = "/";
 			})
 		})

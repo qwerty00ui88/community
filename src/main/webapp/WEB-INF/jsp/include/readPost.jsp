@@ -5,9 +5,18 @@
 
 <div class="container view-post-container">
 	<!-- 게시글 -->
-    <h2>${boardDTO.post.title}</h2>
+    <h2 class="post-title">${boardDTO.post.title}</h2>
     <div class="post-meta text-muted mb-4">
-        <span>작성자: <strong>${boardDTO.writer.nickname}</strong></span> | 
+        <span>작성자: 
+	        <c:choose>
+		        <c:when test="${boardDTO.writer.status == 'DELETED'}">
+		            <strong>탈퇴회원</strong>
+		        </c:when>
+		        <c:otherwise>
+		            <strong>${boardDTO.writer.nickname}</strong>
+		        </c:otherwise>
+		    </c:choose>
+        </span> | 
         <span>작성일: <strong>${fn:substring(boardDTO.post.createdAt.toString(), 0, 10)}</strong></span>
         <c:if test="${boardDTO.post.status == 'EDITED'}">
             <span class="text-muted">(edited)</span>
@@ -24,7 +33,7 @@
 	        <button id="deletePostBtn" class="btn btn-outline-danger">게시글 삭제</button>
 	    </c:if>
 	</div>
-    <div class="post-content">
+    <div class="post-content ">
         <p>${boardDTO.post.contents}</p>
     </div>
     <hr>
@@ -35,7 +44,16 @@
         <c:forEach items="${boardDTO.commentList}" var="comment">
             <div class="comment mb-3" data-comment-id="${comment.id}">
                 <div class="comment-meta text-muted">
-                    <span><strong>${comment.writer.nickname}</strong></span> | 
+                    <span>
+                    <c:choose>
+				        <c:when test="${comment.writer.status == 'DELETED'}">
+				            <strong>탈퇴회원</strong>
+				        </c:when>
+				        <c:otherwise>
+				            <strong>${comment.writer.nickname}</strong>
+				        </c:otherwise>
+				    </c:choose>
+                    </span> | 
                     <span><strong><c:out value="${fn:substring(comment.createdAt.toString(), 0, 10)}"/></strong></span>
                     <c:if test="${comment.status == 'EDITED'}">
                         <span class="text-muted">(edited)</span>
@@ -72,7 +90,16 @@
                     <c:forEach items="${comment.replyList}" var="reply">
                         <div class="reply mb-3" data-reply-id="${reply.id}">
                             <div class="reply-meta text-muted">
-                                <span><strong>${reply.writer.nickname}</strong></span> | 
+                                <span>
+                                <c:choose>
+							        <c:when test="${reply.writer.status == 'DELETED'}">
+							            <strong>탈퇴회원</strong>
+							        </c:when>
+							        <c:otherwise>
+							            <strong>${reply.writer.nickname}</strong>
+							        </c:otherwise>
+							    </c:choose>
+                                </span> | 
                                 <span><strong>${fn:substring(reply.createdAt.toString(), 0, 10)}</strong></span>
                                 <c:if test="${reply.status == 'EDITED'}">
                                     <span class="text-muted">(edited)</span>
@@ -80,10 +107,10 @@
                                 <!-- 대댓글 수정 및 삭제 버튼 -->
                                 <div class="float-right">
 								    <c:if test="${(reply.writer.id == LOGIN_USER_ID || reply.writer.id == LOGIN_ADMIN_ID) && reply.status != 'DELETED'}">
-								        <button class="btn btn-sm text-secondary edit-comment-btn" data-comment-id="${reply.id}">수정</button>
+								        <button class="btn btn-sm text-secondary edit-reply-btn" data-reply-id="${reply.id}">수정</button>
 								    </c:if>
 								    <c:if test="${(reply.writer.id == LOGIN_USER_ID || LOGIN_ADMIN_ID != null) && reply.status != 'DELETED'}">
-								        <button class="btn btn-sm text-danger delete-comment-btn" data-comment-id="${reply.id}">삭제</button>
+								        <button class="btn btn-sm text-danger delete-reply-btn" data-reply-id="${reply.id}">삭제</button>
 								    </c:if>
 								</div>
                             </div>
@@ -130,17 +157,14 @@
     </div>
 </div>
 
-
-
-
 <script>
-$(document).ready(function() {
+$(document).ready(function() {	
     const postId = ${boardDTO.post.id};
     const isAdmin = ${LOGIN_ADMIN_ID != null};
     
     // 게시글 수정
     $("#updatePostBtn").on("click", function() {
-        window.location.href = "/board/update/" + postId;
+        location.href = "/board/update/" + postId;
     });
 
     // 게시글 삭제
@@ -316,3 +340,18 @@ $(document).ready(function() {
     });
 });
 </script>
+<style>
+	.post-content,
+	.post-title {
+		word-wrap: break-word;
+	    white-space: pre-wrap;
+	}
+	
+	.post-item-title {
+		flex-grow: 1;
+	    margin-left: 10px;
+	    white-space: nowrap;
+	    overflow: hidden;
+	    text-overflow: ellipsis;
+	}
+</style>
