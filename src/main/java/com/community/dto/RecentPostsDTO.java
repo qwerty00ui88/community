@@ -3,7 +3,6 @@ package com.community.dto;
 import java.util.List;
 
 import com.community.entity.PostEntity;
-import com.community.entity.UserEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,8 +17,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardDTO {
-	private PostEntity post;
-	private UserEntity writer;
-	private List<CommentDTO> commentList;
+public class RecentPostsDTO {
+	private List<PostEntity> postList;
+	private PaginationDTO pagination;
 }

@@ -56,5 +56,4 @@ public class PostEntity {
 	@UpdateTimestamp
 	@Column(name = "updatedAt")
 	private ZonedDateTime updatedAt;
-
 }
