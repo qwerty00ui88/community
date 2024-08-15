@@ -5,14 +5,12 @@ import jakarta.servlet.http.HttpSession;
 public class SessionUtil {
 	private static final String LOGIN_USER_ID = "LOGIN_USER_ID";
 	private static final String LOGIN_ADMIN_ID = "LOGIN_ADMIN_ID";
-
-	private SessionUtil() {
-	}
+	private static final String LOGIN_NICKNAME = "LOGIN_NICKNAME";
 
 	public static Integer getLoginId(HttpSession session) {
-		Integer memberId = getLoginUserId(session);
-		if (memberId != null) {
-			return memberId;
+		Integer userId = getLoginUserId(session);
+		if (userId != null) {
+			return userId;
 		}
 		return getLoginAdminId(session);
 	}
@@ -21,7 +19,7 @@ public class SessionUtil {
 		return (Integer) session.getAttribute(LOGIN_USER_ID);
 	}
 
-	public static void setLoginMemberId(HttpSession session, int id) {
+	public static void setLoginUserId(HttpSession session, int id) {
 		session.setAttribute(LOGIN_USER_ID, id);
 	}
 
@@ -40,4 +38,13 @@ public class SessionUtil {
 	public static boolean isLoggedIn(HttpSession session) {
 		return getLoginUserId(session) != null || getLoginAdminId(session) != null;
 	}
+	
+	public static void setLoginNickname(HttpSession session, String nickname) {
+		session.setAttribute(LOGIN_NICKNAME, nickname);
+	}
+	
+	public static String getLoginNickname(HttpSession session) {
+		return (String) session.getAttribute(LOGIN_NICKNAME);
+	}
+
 }
