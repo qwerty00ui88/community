@@ -31,19 +31,17 @@
     </select>
 
     <select id="selectUserById" parameterType="int" resultMap="UserDTOResultMap">
-        SELECT id, nickname, name, password, status, isWithDraw, createdAt, updatedAt
+        SELECT id, nickname, name, password, status, createdAt, updatedAt
         FROM user
         WHERE id = #{id}
     </select>
 
-    <!-- ResultMap-->
     <resultMap id="UserDTOResultMap" type="com.community.dto.UserDTO">
         <id property="id" column="id" />
         <result property="nickname" column="nickname" />
         <result property="name" column="name" />
         <result property="password" column="password" />
         <result property="status" column="status" />
-        <result property="isWithDraw" column="isWithDraw" />
         <result property="createdAt" column="createdAt" />
         <result property="updatedAt" column="updatedAt" />
     </resultMap>
