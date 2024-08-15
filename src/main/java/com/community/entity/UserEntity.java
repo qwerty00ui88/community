@@ -1,6 +1,8 @@
 package com.community.entity;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.community.enums.UserStatus;
 
@@ -43,11 +45,13 @@ public class UserEntity {
 	@Column(name = "status")
 	private UserStatus status = UserStatus.USER;
 
+	@UpdateTimestamp
 	@Column(name = "createdAt")
-	private LocalDateTime createdAt;
+	private ZonedDateTime createdAt;
 
+	@UpdateTimestamp
 	@Column(name = "updatedAt")
-	private LocalDateTime updatedAt;
+	private ZonedDateTime updatedAt;
 }
 
 
