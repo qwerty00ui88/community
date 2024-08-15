@@ -2,11 +2,63 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.community.mapper.CategoryMapper">
-	<select id="getCategory" resultType="map">
-		SELECT
-			`id`
-			, `name`
-		FROM
-			`category`
-	</select>
+
+    <!-- 각 카테고리에서 상위 5개의 게시물만 가져오기 -->
+    <select id="selectCategoriesWithTopNPostsByCategoryIdStatusShowOnHome" resultMap="CategoryPostsResultMap">
+		SELECT 
+		    c.id as categoryId, 
+		    c.name as categoryName, 
+		    p.id as postId, 
+		    p.userId, 
+		    p.title, 
+		    p.contents, 
+		    p.views, 
+		    p.status,
+		    p.createdAt, 
+		    p.updatedAt
+		FROM category c
+		LEFT JOIN (
+		    SELECT 
+		        id, 
+		        userId, 
+		        categoryId, 
+		        title, 
+		        contents, 
+		        views, 
+		        status, 
+		        createdAt, 
+		        updatedAt,
+		        ROW_NUMBER() OVER(PARTITION BY categoryId ORDER BY createdAt DESC) as rn
+		    FROM post
+		    WHERE status != 'DELETED'
+		) p ON c.id = p.categoryId AND p.rn &lt;= #{limit}
+		WHERE 
+		    1=1
+		    <if test="showOnHome != null">
+		        AND c.showOnHome = #{showOnHome}
+		    </if>
+		    <if test="status != null">
+		        AND c.status = #{status}
+		    </if>
+		    <if test="categoryId != null">
+		        AND c.id = #{categoryId}
+		    </if>
+		ORDER BY c.id, p.createdAt DESC
+    </select>
+    
+    <resultMap id="CategoryPostsResultMap" type="com.community.dto.CategoryPostsDTO">
+        <result property="categoryId" column="categoryId" />
+        <result property="categoryName" column="categoryName" />
+        <collection property="postList" ofType="com.community.entity.PostEntity">
+            <result property="id" column="postId" />
+            <result property="userId" column="userId" />
+            <result property="title" column="title" />
+            <result property="contents" column="contents" />
+            <result property="views" column="views" />
+            <result property="status" column="status" />
+            <result property="createdAt" column="createdAt" />
+            <result property="updatedAt" column="updatedAt" />
+        </collection>
+    </resultMap>
+    
 </mapper>

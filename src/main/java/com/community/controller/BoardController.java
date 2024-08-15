@@ -10,27 +10,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.community.dto.BoardDTO;
 import com.community.entity.PostEntity;
 import com.community.enums.CategoryStatus;
-import com.community.service.impl.CategoryServiceImpl;
-import com.community.service.impl.CommentServiceImpl;
-import com.community.service.impl.PostServiceImpl;
-import com.community.service.impl.UserServiceImpl;
+import com.community.enums.PostStatus;
+import com.community.service.CategoryService;
+import com.community.service.CommentService;
+import com.community.service.PostService;
+import com.community.service.UserService;
 
-@RequestMapping("/board")
 @Controller
+@RequestMapping("/board")
 public class BoardController {
 
 	@Autowired
-	private PostServiceImpl postService;
+	private PostService postService;
 
 	@Autowired
-	private UserServiceImpl userService;
+	private UserService userService;
 
 	@Autowired
-	private CommentServiceImpl commentService;
+	private CommentService commentService;
 
 	@Autowired
-	private CategoryServiceImpl categoryService;
-	
+	private CategoryService categoryService;
+
 	// 게시글 생성 페이지
 	@GetMapping("/create")
 	public String createPostView(Model model) {
@@ -43,16 +44,11 @@ public class BoardController {
 	@GetMapping("/{postId}")
 	public String readPostView(@PathVariable("postId") Integer postId, Model model) {
 		BoardDTO boardDTO = new BoardDTO();
-		// 조회수 증가
-		PostEntity post = postService.updateViews(postId);
-		
-		// 게시글
+
+		PostEntity post = postService.getPostByIdAndStatusNot(postId, PostStatus.DELETED);
+		post = postService.updateViews(postId);
 		boardDTO.setPost(post);
-
-		// 작성자
-		boardDTO.setWriter(userService.getUserInfo(post.getUserId()));
-
-		// 댓글
+		boardDTO.setWriter(userService.getUser(post.getUserId()));
 		boardDTO.setCommentList(commentService.getCommentListWithRepliesByPostId(postId));
 
 		model.addAttribute("boardDTO", boardDTO);
@@ -63,7 +59,7 @@ public class BoardController {
 	// 게시글 수정 페이지
 	@GetMapping("/update/{postId}")
 	public String updatePostView(@PathVariable("postId") Integer postId, Model model) {
-		model.addAttribute("post", postService.getPostById(postId));
+		model.addAttribute("post", postService.getPostByIdAndStatusNot(postId, PostStatus.DELETED));
 		model.addAttribute("categoryList", categoryService.getCategoryListByStatus(CategoryStatus.ACTIVE));
 		model.addAttribute("viewName", "include/updatePost");
 		return "template/layout";
