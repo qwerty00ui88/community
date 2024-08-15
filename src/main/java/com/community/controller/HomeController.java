@@ -1,27 +1,39 @@
 package com.community.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.community.dto.HomeDTO;
-import com.community.service.impl.PostServiceImpl;
+import com.community.service.HomeService;
+import com.community.utils.SessionUtil;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class HomeController {
 
 	@Autowired
-	private PostServiceImpl postService;
+	private HomeService homeService;
 
-	@GetMapping("/")
-	public String homeView(Model model) {
-		HomeDTO homeDTO = new HomeDTO();
-		homeDTO.setAllPostList(postService.getPostList());
-		homeDTO.setMostViewedPostList(postService.getMostViewedPostList());
-		homeDTO.setPostListByCategory1(postService.getPostListByCategoryId(1));
-		homeDTO.setPostListByCategory2(postService.getPostListByCategoryId(2));
+	// 홈 페이지(랜딩 페이지)
+	@GetMapping("/" )
+	public String homeView(
+			@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "size", defaultValue = "10") int size, 
+			Model model,
+			HttpSession session) {
+		Pageable pageable = PageRequest.of(page, size);
+		HomeDTO homeDTO = homeService.generateHomeView(pageable);
 
+		if(SessionUtil.isLoggedIn(session)) {
+			model.addAttribute("nickname", SessionUtil.getLoginNickname(session));
+		}
+		
 		model.addAttribute("homeDTO", homeDTO);
 		model.addAttribute("viewName", "include/home");
 		return "template/layout";
