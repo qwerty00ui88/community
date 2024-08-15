@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.community.aop.LoginCheck;
 import com.community.dto.response.CommonResponse;
+import com.community.dto.response.UserResponseDTO;
 import com.community.entity.UserEntity;
 import com.community.enums.UserStatus;
 import com.community.service.UserService;
@@ -34,21 +35,22 @@ public class UserRestController {
 	// 회원가입
 	@PostMapping("/signup")
 	@Operation(summary = "회원가입")
-	public ResponseEntity<CommonResponse<UserEntity>> signUp(@RequestParam("name") String name,
+	public ResponseEntity<CommonResponse<UserResponseDTO>> signUp(@RequestParam("name") String name,
 			@RequestParam("nickname") String nickname, @RequestParam("password") String password) {
 		UserEntity user = userService.createUser(name, nickname, password);
-		CommonResponse<UserEntity> commonResponse = CommonResponse.success("회원 생성 성공", user);
+		UserResponseDTO userResponseDTO = new UserResponseDTO(user);
+		CommonResponse<UserResponseDTO> commonResponse = CommonResponse.success("회원 생성 성공", userResponseDTO);
 		return ResponseEntity.ok(commonResponse);
 	}
 
 	// 로그인
 	@PostMapping("/login")
 	@Operation(summary = "로그인")
-	public ResponseEntity<CommonResponse<UserEntity>> login(@RequestParam("nickname") String nickname,
+	public ResponseEntity<CommonResponse<UserResponseDTO>> login(@RequestParam("nickname") String nickname,
 			@RequestParam("password") String password, HttpSession session) {
 
 		UserEntity user = userService.getUserByNicknameAndPasswordAndStatusNot(nickname, password, UserStatus.DELETED);
-
+		
 		if (user.getStatus() == UserStatus.ADMIN) {
 			SessionUtil.setLoginAdminId(session, user.getId());
 		} else {
@@ -56,7 +58,8 @@ public class UserRestController {
 		}
 		SessionUtil.setLoginNickname(session, user.getNickname());
 
-		CommonResponse<UserEntity> commonResponse = CommonResponse.success("로그인 성공", user);
+		UserResponseDTO userResponseDTO = new UserResponseDTO(user);
+		CommonResponse<UserResponseDTO> commonResponse = CommonResponse.success("로그인 성공", userResponseDTO);
 		return ResponseEntity.ok(commonResponse);
 	}
 
