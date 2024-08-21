@@ -25,6 +25,7 @@ import com.community.service.PostService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 
 @Tag(name = "게시글 관련 API")
 @RestController

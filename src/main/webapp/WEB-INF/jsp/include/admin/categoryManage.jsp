@@ -14,7 +14,7 @@
                 <div class="col-md-4">
                     <div class="card mb-4">
                         <div class="card-body">
-                            <h5 class="card-title"><a href="/category?categoryId=${category.id}" class="text-decoration-none">${category.name}</a></h5>
+                            <h5 class="card-title"><a href="#" class="text-decoration-none">${category.name}</a></h5>
                             <p class="card-text">
                                 상태: 
                                 <strong class="${category.status == 'ACTIVE' ? 'text-success' : 'text-danger'}">
@@ -220,5 +220,6 @@ $(document).ready(function() {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		display: block;
+		cursor: default; 
 	}
 </style>

@@ -17,4 +17,6 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Intege
 	public List<CategoryEntity> findByStatusNot(CategoryStatus status);
 	
 	public Optional<CategoryEntity> findByIdAndStatusNot(int id, CategoryStatus status);
+
+	public Optional<CategoryEntity> findByIdAndStatus(int id,  CategoryStatus status);
 }
