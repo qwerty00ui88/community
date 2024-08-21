@@ -19,11 +19,13 @@ public interface PostRepository extends JpaRepository<PostEntity, Integer> {
 
 	public Optional<PostEntity> findByIdAndStatusNot(int id, PostStatus status);
 
-	public List<PostEntity> findTop10ByStatusNotOrderByViewsDesc(PostStatus status);
+	public List<PostEntity> findTop10ByStatusNotAndCategoryIdInOrderByViewsDesc(PostStatus status,
+			List<Long> categoryIdList);
 
 	public List<PostEntity> findByUserIdAndStatusNot(int userId, PostStatus status);
 
-	public Page<PostEntity> findByStatusNotOrderByCreatedAtDesc(PostStatus status, Pageable pageable);
+	public Page<PostEntity> findByStatusNotAndCategoryIdInOrderByCreatedAtDesc(PostStatus status,
+			List<Long> categoryIdList, Pageable pageable);
 
 	public Page<PostEntity> findByCategoryIdAndStatusNotOrderByCreatedAtDesc(int categoryId, PostStatus status,
 			Pageable pageable);

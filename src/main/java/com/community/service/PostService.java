@@ -8,8 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.community.entity.CategoryEntity;
 import com.community.entity.PostEntity;
 import com.community.entity.UserEntity;
+import com.community.enums.CategoryStatus;
 import com.community.enums.PostStatus;
 import com.community.exception.CategoryNotFoundException;
 import com.community.exception.InvalidPostException;
@@ -48,7 +50,8 @@ public class PostService {
 
 	// 게시글 조회
 	public PostEntity getPostByIdAndStatusNot(int postId, PostStatus status) {
-		return postRepository.findByIdAndStatusNot(postId, PostStatus.DELETED).orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
+		return postRepository.findByIdAndStatusNot(postId, PostStatus.DELETED)
+				.orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
 	}
 
 	public List<PostEntity> getPostListByUserIdAndStatusNot(int userId, PostStatus status) {
@@ -56,15 +59,20 @@ public class PostService {
 	}
 
 	public List<PostEntity> getPostListTop10ByStatusNotOrderByViewsDesc(PostStatus status) {
-		return postRepository.findTop10ByStatusNotOrderByViewsDesc(status);
+		List<CategoryEntity> categoryList = categoryRepository.findByStatus(CategoryStatus.ACTIVE);
+		List<Long> categoryIdList = categoryList.stream().map(CategoryEntity::getId).collect(Collectors.toList());
+		return postRepository.findTop10ByStatusNotAndCategoryIdInOrderByViewsDesc(status, categoryIdList);
 	}
 
 	public Page<PostEntity> getPostListByStatusNotOrderByCreatedAtDesc(PostStatus status, Pageable pageable) {
-		return postRepository.findByStatusNotOrderByCreatedAtDesc(status, pageable);
+		List<CategoryEntity> categoryList = categoryRepository.findByStatus(CategoryStatus.ACTIVE);
+		List<Long> categoryIdList = categoryList.stream().map(CategoryEntity::getId).collect(Collectors.toList());
+		return postRepository.findByStatusNotAndCategoryIdInOrderByCreatedAtDesc(status, categoryIdList, pageable);
 	}
 
 	public Page<PostEntity> getPostsByCategoryIdAndStatusNotOrderByCreatedAtDesc(int categoryId, PostStatus status,
 			Pageable pageable) {
+		categoryRepository.findByIdAndStatus(categoryId, CategoryStatus.ACTIVE).orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
 		return postRepository.findByCategoryIdAndStatusNotOrderByCreatedAtDesc(categoryId, status, pageable);
 	}
 
