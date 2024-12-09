@@ -2,6 +2,7 @@ package com.community.entity;
 
 import java.time.ZonedDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.community.enums.CategoryStatus;
@@ -41,7 +42,7 @@ public class CategoryEntity {
 	@Column(name = "showOnHome")
 	private boolean showOnHome;
 
-	@UpdateTimestamp
+	@CreationTimestamp
 	@Column(name = "createdAt", updatable = false)
 	private ZonedDateTime createdAt;
 

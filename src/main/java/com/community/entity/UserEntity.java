@@ -2,6 +2,7 @@ package com.community.entity;
 
 import java.time.ZonedDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.community.enums.UserStatus;
@@ -45,7 +46,7 @@ public class UserEntity {
 	@Column(name = "status")
 	private UserStatus status = UserStatus.USER;
 
-	@UpdateTimestamp
+	@CreationTimestamp
 	@Column(name = "createdAt")
 	private ZonedDateTime createdAt;
 
