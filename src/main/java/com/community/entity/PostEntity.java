@@ -2,6 +2,7 @@ package com.community.entity;
 
 import java.time.ZonedDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.community.enums.PostStatus;
@@ -49,7 +50,7 @@ public class PostEntity {
 	@Column(name = "status")
 	private PostStatus status = PostStatus.DEFAULT;
 	
-	@UpdateTimestamp
+	@CreationTimestamp
 	@Column(name = "createdAt", updatable = false)
 	private ZonedDateTime createdAt;
 
