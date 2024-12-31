@@ -1,5 +1,7 @@
 package com.community.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,11 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.community.dto.BoardDTO;
+import com.community.entity.FileEntity;
 import com.community.entity.PostEntity;
 import com.community.enums.CategoryStatus;
 import com.community.enums.PostStatus;
 import com.community.service.CategoryService;
 import com.community.service.CommentService;
+import com.community.service.FileService;
 import com.community.service.PostService;
 import com.community.service.UserService;
 
@@ -32,6 +36,9 @@ public class BoardController {
 	@Autowired
 	private CategoryService categoryService;
 
+	@Autowired
+	private FileService fileService;
+	
 	// 게시글 생성 페이지
 	@GetMapping("/create")
 	public String createPostView(Model model) {
@@ -51,6 +58,9 @@ public class BoardController {
 		boardDTO.setWriter(userService.getUser(post.getUserId()));
 		boardDTO.setCommentList(commentService.getCommentListWithRepliesByPostId(postId));
 
+		List<FileEntity> fileList = fileService.getFilesByDomainAndDomainId("post", postId);
+		boardDTO.setFileList(fileList);
+		
 		model.addAttribute("boardDTO", boardDTO);
 		model.addAttribute("viewName", "include/readPost");
 		return "template/layout";
@@ -61,6 +71,7 @@ public class BoardController {
 	public String updatePostView(@PathVariable("postId") Integer postId, Model model) {
 		model.addAttribute("post", postService.getPostByIdAndStatusNot(postId, PostStatus.DELETED));
 		model.addAttribute("categoryList", categoryService.getCategoryListByStatus(CategoryStatus.ACTIVE));
+		model.addAttribute("fileList", fileService.getFilesByDomainAndDomainId("post", postId));
 		model.addAttribute("viewName", "include/updatePost");
 		return "template/layout";
 	}

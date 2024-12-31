@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.community.entity.CategoryEntity;
 import com.community.entity.PostEntity;
@@ -33,8 +34,12 @@ public class PostService {
 	@Autowired
 	private CategoryRepository categoryRepository;
 
+	@Autowired
+	private FileService fileService;
+
 	// 게시글 생성
-	public PostEntity createPost(Integer userId, Integer categoryId, String title, String contents) {
+	public PostEntity createPost(Integer userId, Integer categoryId, String title, String contents,
+			MultipartFile[] files) {
 		if (!categoryRepository.existsById(categoryId)) {
 			throw new CategoryNotFoundException("유효하지 않은 카테고리 ID입니다.");
 		}
@@ -44,8 +49,12 @@ public class PostService {
 		if (contents == null || contents.trim().isEmpty()) {
 			throw new InvalidPostException("게시글 내용을 입력하세요.");
 		}
-		return postRepository.save(
+		PostEntity post = postRepository.save(
 				PostEntity.builder().userId(userId).categoryId(categoryId).title(title).contents(contents).build());
+		if (files != null && files.length > 0) {
+			fileService.uploadFiles(files, "post", post.getId());
+		}
+		return post;
 	}
 
 	// 게시글 조회
@@ -72,7 +81,8 @@ public class PostService {
 
 	public Page<PostEntity> getPostsByCategoryIdAndStatusNotOrderByCreatedAtDesc(int categoryId, PostStatus status,
 			Pageable pageable) {
-		categoryRepository.findByIdAndStatus(categoryId, CategoryStatus.ACTIVE).orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
+		categoryRepository.findByIdAndStatus(categoryId, CategoryStatus.ACTIVE)
+				.orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
 		return postRepository.findByCategoryIdAndStatusNotOrderByCreatedAtDesc(categoryId, status, pageable);
 	}
 
@@ -92,19 +102,23 @@ public class PostService {
 	}
 
 	// 게시글 수정
-	public PostEntity updatePostByIdAndUserId(int postId, int userId, Integer categoryId, String title,
-			String contents) {
+	public PostEntity updatePostByIdAndUserId(int postId, int userId, Integer categoryId, String title, String contents,
+			MultipartFile[] newFiles, Integer[] removedFiles) {
 		PostEntity post = postRepository.findById(postId)
 				.orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
-
 		if (post.getUserId() != userId) {
 			throw new UnauthorizedException("이 게시글을 수정할 권한이 없습니다.");
 		}
-
 		if (post.getStatus() != PostStatus.DELETED) {
 			post = post.toBuilder().categoryId(categoryId).title(title).contents(contents).status(PostStatus.EDITED)
 					.build();
 			post = postRepository.save(post);
+		}
+		if (newFiles != null && newFiles.length > 0) {
+			fileService.uploadFiles(newFiles, "post", post.getId());
+		}
+		if (removedFiles != null && removedFiles.length > 0) {
+			fileService.deleteFiles(removedFiles);
 		}
 		return post;
 	}
@@ -122,7 +136,6 @@ public class PostService {
 	public void deletePostById(int postId) {
 		PostEntity post = postRepository.findById(postId)
 				.orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
-
 		post = post.toBuilder().status(PostStatus.DELETED).build();
 		postRepository.save(post);
 	}
@@ -131,7 +144,6 @@ public class PostService {
 	public PostEntity updateViews(Integer postId) {
 		PostEntity post = postRepository.findById(postId)
 				.orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
-
 		if (post.getStatus() != PostStatus.DELETED) {
 			post = post.toBuilder().views(post.getViews() + 1).build();
 		}
