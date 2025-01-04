@@ -26,6 +26,11 @@
 			<textarea class="form-control" id="contents" name="contents"
 				rows="10" placeholder="내용을 입력하세요" required>${post.contents}</textarea>
 		</div>
+
+		<jsp:include page="../common/fileManagement.jsp">
+            <jsp:param name="fileList" value="${fileList}" />
+        </jsp:include>
+		
 		<button type="submit" class="btn btn-primary-custom btn-block">게시글
 			수정</button>
 	</form>
@@ -38,18 +43,25 @@
 		$("#updatePostForm").on("submit", function(e) {
 			e.preventDefault();
 
-			const title = $("#title").val();
-			const categoryId = $("#category").val();
-			const contents = $("#contents").val();
+		    const formData = new FormData();
+		    formData.append("title", $("#title").val());
+	        formData.append("categoryId", $("#category").val());
+	        formData.append("contents", $("#contents").val());
 
+		    newFilesArray.forEach((file) => {
+		        formData.append("newFiles", file);
+		    });
+
+		    removedFilesArray.forEach((fileId) => {
+		        formData.append("removedFiles", fileId);
+		    });
+		    
 			$.ajax({
 			    url: "/api/post/" + postId,
 			    type: "PUT",
-			    data: {
-			        "title": title,
-			        "categoryId": categoryId,
-			        "contents": contents
-			    },
+			    data: formData,
+		        processData: false,
+		        contentType: false,
 			    success: function(response) {
 			        if (response.status === "OK" && response.code === "SUCCESS") {
 			            alert(response.message);

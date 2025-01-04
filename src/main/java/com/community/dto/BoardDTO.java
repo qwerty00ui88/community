@@ -2,6 +2,7 @@ package com.community.dto;
 
 import java.util.List;
 
+import com.community.entity.FileEntity;
 import com.community.entity.PostEntity;
 import com.community.entity.UserEntity;
 
@@ -20,6 +21,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class BoardDTO {
 	private PostEntity post;
+	private List<FileEntity> fileList;
 	private UserEntity writer;
 	private List<CommentDTO> commentList;
 }

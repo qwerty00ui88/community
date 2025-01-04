@@ -33,7 +33,17 @@
 	        <button id="deletePostBtn" class="btn btn-outline-danger">게시글 삭제</button>
 	    </c:if>
 	</div>
-    <div class="post-content ">
+    <div class="post-content">
+		<c:forEach var="item" items="${boardDTO.fileList}">
+		    <c:choose>
+		    	<c:when test="${fn:contains(item.metadata, 'image/')}">
+		            <img src="${item.url}" alt="Image" style="max-width: 100%; height: auto;">
+		        </c:when>
+		        <c:otherwise>
+		        	<a href="${item.url}" target="_blank" download="${item.metadataObject.originalFilename}">${item.metadataObject.originalFilename}</a>
+		        </c:otherwise>
+			</c:choose>
+		</c:forEach>
         <p>${boardDTO.post.contents}</p>
     </div>
     <hr>
@@ -160,7 +170,7 @@
 <script>
 $(document).ready(function() {	
     const postId = ${boardDTO.post.id};
-    const isAdmin = ${LOGIN_ADMIN_ID != null};
+    const isAdmin = ${LOGIN_ADMIN_ID != null};    
     
     // 게시글 수정
     $("#updatePostBtn").on("click", function() {
@@ -337,7 +347,7 @@ $(document).ready(function() {
                 alert("대댓글 수정 중 오류가 발생했습니다: " + error);
             }
         });
-    });
+    });    
 });
 </script>
 <style>
