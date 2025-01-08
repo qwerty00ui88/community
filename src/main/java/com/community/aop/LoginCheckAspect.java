@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.community.exception.UnauthorizedException;
+import com.community.user.UnauthorizedException;
 import com.community.utils.SessionUtil;
 
 import jakarta.servlet.http.HttpSession;

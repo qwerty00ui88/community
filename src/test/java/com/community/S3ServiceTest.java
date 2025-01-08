@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
-import com.community.service.S3Service;
+import com.community.common.service.S3Service;
 
 @SpringBootTest
 class S3ServiceTest {
