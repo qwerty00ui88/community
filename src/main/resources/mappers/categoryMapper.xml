@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.community.category.command.domain.CategoryMapper">
+<mapper namespace="com.community.category.infra.CategoryMapper">
 
     <!-- 각 카테고리에서 상위 5개의 게시물만 가져오기 -->
     <select id="selectCategoriesWithTopNPostsByCategoryIdStatusShowOnHome" resultMap="CategoryPostsResultMap">
@@ -46,10 +46,10 @@
 		ORDER BY c.id, p.createdAt DESC
     </select>
     
-    <resultMap id="CategoryPostsResultMap" type="com.community.category.query.dto.CategoryPostsDTO">
+    <resultMap id="CategoryPostsResultMap" type="com.community.category.application.dto.CategoryPostsDTO">
         <result property="categoryId" column="categoryId" />
         <result property="categoryName" column="categoryName" />
-        <collection property="postList" ofType="com.community.post.command.domain.PostEntity">
+        <collection property="postList" ofType="com.community.post.domain.PostEntity">
             <result property="id" column="postId" />
             <result property="userId" column="userId" />
             <result property="title" column="title" />

@@ -1,0 +1,19 @@
+package com.community.category.domain;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CategoryRepository extends JpaRepository<CategoryEntity, Integer> {
+
+	public List<CategoryEntity> findByStatus(CategoryStatus status);
+
+	public List<CategoryEntity> findByStatusAndShowOnHome(CategoryStatus status, boolean showOnHome);
+
+	public List<CategoryEntity> findByStatusNot(CategoryStatus status);
+	
+	public Optional<CategoryEntity> findByIdAndStatusNot(int id, CategoryStatus status);
+
+	public Optional<CategoryEntity> findByIdAndStatus(int id,  CategoryStatus status);
+}

@@ -10,7 +10,7 @@ import com.community.category.CategoryNotFoundException;
 import com.community.category.InvalidCategoryException;
 import com.community.comment.CommentNotFoundException;
 import com.community.comment.InvalidCommentException;
-import com.community.common.query.dto.CommonResponse;
+import com.community.common.presentation.dto.CommonResponse;
 import com.community.post.InvalidPostException;
 import com.community.post.PostNotFoundException;
 import com.community.user.PasswordMismatchException;
