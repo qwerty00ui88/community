@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.community.comment.command.domain.CommentMapper">
+<mapper namespace="com.community.comment.infra.CommentMapper">
     <select id="selectCommentListWithRepliesByPostId" resultMap="CommentResultMap">
         SELECT
             c1.id,
@@ -36,7 +36,7 @@
         WHERE id = #{id}
     </select>
 
-    <resultMap id="UserDTOResultMap" type="com.community.user.query.dto.UserDTO">
+    <resultMap id="UserDTOResultMap" type="com.community.user.application.dto.UserDTO">
         <id property="id" column="id" />
         <result property="nickname" column="nickname" />
         <result property="name" column="name" />
@@ -46,7 +46,7 @@
         <result property="updatedAt" column="updatedAt" />
     </resultMap>
 
-    <resultMap id="CommentResultMap" type="com.community.comment.query.dto.CommentDTO">
+    <resultMap id="CommentResultMap" type="com.community.comment.application.dto.CommentDTO">
         <id property="id" column="id" />
         <result property="postId" column="postId" />
         <result property="userId" column="userId" />
@@ -56,9 +56,9 @@
         <result property="createdAt" column="createdAt" />
         <result property="updatedAt" column="updatedAt" />
 
-        <association property="writer" column="userId" javaType="com.community.user.query.dto.UserDTO" select="selectUserById" />
+        <association property="writer" column="userId" javaType="com.community.user.application.dto.UserDTO" select="selectUserById" />
 
-        <collection property="replyList" ofType="com.community.comment.query.dto.CommentDTO">
+        <collection property="replyList" ofType="com.community.comment.application.dto.CommentDTO">
             <id property="id" column="replyId" />
             <result property="postId" column="replyPostId" />
             <result property="userId" column="replyUserId" />
@@ -69,7 +69,7 @@
             <result property="updatedAt" column="replyUpdatedAt" />
 
             <!-- replyWriter의 모든 속성을 UserDTOResultMap과 연결 -->
-            <association property="writer" column="replyUserId" javaType="com.community.user.query.dto.UserDTO" select="selectUserById" />
+            <association property="writer" column="replyUserId" javaType="com.community.user.application.dto.UserDTO" select="selectUserById" />
         </collection>
     </resultMap>
 </mapper>
