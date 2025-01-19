@@ -56,7 +56,7 @@
             
             if (nickname.length > 0) {
                 // 닉네임 중복 확인
-                $.get("/api/user/isDuplicatedNickname", { "nickname": nickname })
+                $.get("/api/user/public/isDuplicatedNickname", { "nickname": nickname })
                     .done(function(response) {
                         if (response.data) {
                             validateField("#nickname", false, "이미 사용 중인 닉네임입니다.", "");
@@ -101,7 +101,7 @@
     			const nickname = $("#nickname").val();
     			const password = $("#password").val();
     			
-            	$.post("/api/user/signup", {
+            	$.post("/api/user/public/signup", {
     				"name" : name,
     				"nickname" : nickname,
     				"password" : password

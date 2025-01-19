@@ -1,32 +1,49 @@
 package com.community.user.application;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.community.common.util.SHA256Util;
 import com.community.user.PasswordMismatchException;
-import com.community.user.UserAlreadyExistsException;
 import com.community.user.UserNotFoundException;
+import com.community.user.domain.Role;
+import com.community.user.domain.RoleRepository;
 import com.community.user.domain.UserEntity;
 import com.community.user.domain.UserRepository;
 import com.community.user.domain.UserStatus;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	private final RoleRepository roleRepository;
 
-	// 회원 생성
-	public UserEntity createUser(String name, String nickname, String password) {
-		UserEntity user = userRepository.getByNickname(nickname);
-		if (user != null) {
-			throw new UserAlreadyExistsException("이미 존재하는 닉네임입니다.");
-		}
-		String cryptoPassword = SHA256Util.encryptSHA256(password);
-		return userRepository.save(UserEntity.builder().name(name).nickname(nickname).password(cryptoPassword).build());
+//	// 회원 생성
+//	public UserEntity createUser(String name, String nickname, String password) {
+//		UserEntity user = userRepository.getByNickname(nickname);
+//		if (user != null) {
+//			throw new UserAlreadyExistsException("이미 존재하는 닉네임입니다.");
+//		}
+//		String cryptoPassword = SHA256Util.encryptSHA256(password);
+//		return userRepository.save(UserEntity.builder().name(name).nickname(nickname).password(cryptoPassword).build());
+//	}
+
+	@Transactional
+	public void createUser(UserEntity account) {
+		Role role = roleRepository.findByRoleName("ROLE_USER");
+		Set<Role> roles = new HashSet<>();
+		roles.add(role);
+		account.setUserRoles(roles);
+		userRepository.save(account);
 	}
 
 	// 회원 조회

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.community.category.application.CategoryService;
 import com.community.category.domain.CategoryEntity;
 import com.community.category.domain.CategoryStatus;
-import com.community.common.aop.LoginCheck;
 import com.community.common.presentation.dto.CommonResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +27,7 @@ public class CategoryRestController {
 	private CategoryService categoryService;
 
 	// 카테고리 생성
-	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+//	@LoginCheck(type = LoginCheck.UserType.ADMIN)
 	@PostMapping
 	@Operation(summary = "(관리자용) 카테고리 생성")
 	public ResponseEntity<CommonResponse<CategoryEntity>> createCategory(
@@ -40,7 +39,7 @@ public class CategoryRestController {
 	}
 
 	// 카테고리 수정
-	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+//	@LoginCheck(type = LoginCheck.UserType.ADMIN)
 	@PatchMapping("/update")
 	@Operation(summary = "(관리자용) 카테고리 수정")
 	public ResponseEntity<CommonResponse<CategoryEntity>> updateCategory(
@@ -52,7 +51,7 @@ public class CategoryRestController {
 	}
 
 	// 홈 표시 체크박스
-	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+//	@LoginCheck(type = LoginCheck.UserType.ADMIN)
 	@PatchMapping("/showOnHome")
 	@Operation(summary = "(관리자용) 카테고리 홈 표시 체크박스 토클")
 	public ResponseEntity<CommonResponse<CategoryEntity>> updateCategory(
@@ -64,7 +63,7 @@ public class CategoryRestController {
 	}
 
 	// 카테고리 삭제
-	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+//	@LoginCheck(type = LoginCheck.UserType.ADMIN)
 	@DeleteMapping("/{categoryId}")
 	@Operation(summary = "(관리자용) 카테고리 삭제")
 	public ResponseEntity<CommonResponse<Void>> deleteCategoryById(

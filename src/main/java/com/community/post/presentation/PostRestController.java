@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.community.common.aop.LoginCheck;
 import com.community.common.application.PaginationService;
 import com.community.common.presentation.dto.CommonResponse;
 import com.community.post.application.PostService;
@@ -39,7 +38,7 @@ public class PostRestController {
 	private PostService postService;
 
 	// 게시글 조회
-	@GetMapping
+	@GetMapping("/public")
 	@Operation(summary = "게시글 조회")
 	public ResponseEntity<CommonResponse<RecentPostsDTO>> getPostListByCategoryId(
 			@RequestParam("categoryId") int categoryId, @RequestParam(name = "page", defaultValue = "0") int page,
@@ -60,7 +59,7 @@ public class PostRestController {
 	}
 
 	// 게시글 검색
-	@GetMapping("/search")
+	@GetMapping("/public/search")
 	@Operation(summary = "게시글 검색")
 	public ResponseEntity<CommonResponse<RecentPostsDTO>> getPostSearchResults(@RequestParam("field") String field,
 			@RequestParam("keyword") String keyword, @RequestParam(name = "page", defaultValue = "0") int page,
@@ -74,8 +73,8 @@ public class PostRestController {
 	}
 
 	// 게시글 생성
-	@LoginCheck
-	@PostMapping
+//	@LoginCheck
+	@PostMapping("/auth")
 	@Operation(summary = "게시글 생성")
 	public ResponseEntity<CommonResponse<PostEntity>> createPost(
 			@RequestParam(name = "id", required = false) Integer userId, @RequestParam("categoryId") int categoryId,
@@ -86,9 +85,9 @@ public class PostRestController {
 		return ResponseEntity.ok(commonResponse);
 	}
 
-	// 게시글 수정
-	@LoginCheck
-	@PutMapping("/{postId}")
+	// 게시글 수정 !!!!!!!사용자면 본인인지 검사, 관리자면 그냥 수정 로직 추가 필요(관리자 수정 권한은 없긴 한데 )
+//	@LoginCheck
+	@PutMapping("/auth/{postId}")
 	@Operation(summary = "게시글 수정")
 	public ResponseEntity<CommonResponse<PostEntity>> updatePosts(
 			@RequestParam(name = "id", required = false) Integer userId, @PathVariable("postId") int postId,
@@ -99,9 +98,9 @@ public class PostRestController {
 		return ResponseEntity.ok(commonResponse);
 	}
 
-	// 게시글 삭제
-	@LoginCheck
-	@DeleteMapping("/{postId}")
+	// 게시글 삭제 !!!!!!!사용자면 본인인지 검사, 관리자면 그냥 삭제 로직 추가 필요
+//	@LoginCheck
+	@DeleteMapping("/auth/{postId}")
 	@Operation(summary = "게시글 삭제")
 	public ResponseEntity<CommonResponse<Void>> deletePostByIdAndUserId(
 			@RequestParam(name = "id", required = false) Integer userId, @PathVariable(name = "postId") int postId) {
@@ -110,15 +109,15 @@ public class PostRestController {
 		return ResponseEntity.ok(commonResponse);
 	}
 
-	// 관리자용 게시글 삭제
-	@LoginCheck(type = LoginCheck.UserType.ADMIN)
-	@DeleteMapping("/admin/{postId}")
-	@Operation(summary = "(관리자용) 게시글 삭제")
-	public ResponseEntity<CommonResponse<Void>> deletePostById(
-			@RequestParam(name = "id", required = false) Integer userId, @PathVariable(name = "postId") int postId) {
-		postService.deletePostById(postId);
-		CommonResponse<Void> commonResponse = CommonResponse.success("게시글 삭제 성공", null);
-		return ResponseEntity.ok(commonResponse);
-	}
+//	// 관리자용 게시글 삭제
+////	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+//	@DeleteMapping("/admin/{postId}")
+//	@Operation(summary = "(관리자용) 게시글 삭제")
+//	public ResponseEntity<CommonResponse<Void>> deletePostById(
+//			@RequestParam(name = "id", required = false) Integer userId, @PathVariable(name = "postId") int postId) {
+//		postService.deletePostById(postId);
+//		CommonResponse<Void> commonResponse = CommonResponse.success("게시글 삭제 성공", null);
+//		return ResponseEntity.ok(commonResponse);
+//	}
 
 }

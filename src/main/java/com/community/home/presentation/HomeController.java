@@ -3,6 +3,7 @@ package com.community.home.presentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +37,8 @@ public class HomeController {
 		
 		model.addAttribute("homeDTO", homeDTO);
 		model.addAttribute("viewName", "include/home");
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + SecurityContextHolder.getContext().getAuthentication());
+
 		return "template/layout";
 	}
 

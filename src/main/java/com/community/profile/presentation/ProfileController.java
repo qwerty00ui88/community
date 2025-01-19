@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.community.comment.application.CommentService;
-import com.community.common.aop.LoginCheck;
 import com.community.post.application.PostService;
 import com.community.post.domain.PostStatus;
 import com.community.profile.application.dto.ProfileDTO;
@@ -26,7 +25,7 @@ public class ProfileController {
 	private CommentService commentService;
 
 	// 회원 프로필 페이지
-	@LoginCheck
+//	@LoginCheck
 	@GetMapping("/profile")
 	public String profileView(@RequestParam(name = "id", required = false) Integer userId, Model model) {
 		ProfileDTO profile = new ProfileDTO();

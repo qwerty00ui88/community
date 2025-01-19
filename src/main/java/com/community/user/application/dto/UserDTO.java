@@ -1,6 +1,7 @@
 package com.community.user.application.dto;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import com.community.user.domain.UserStatus;
 
@@ -25,4 +26,5 @@ public class UserDTO {
 	private UserStatus status;
 	private ZonedDateTime createdAt;
 	private ZonedDateTime updatedAt;
+	private List<String> roles;
 }

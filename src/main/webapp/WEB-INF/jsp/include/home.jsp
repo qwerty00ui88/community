@@ -1,43 +1,42 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <div class="row">
 	<aside class="col-md-4">
 		<div class="sidebar">
-			<c:choose>
-				<c:when test="${not empty LOGIN_USER_ID || not empty LOGIN_ADMIN_ID}">
+			<sec:authorize access="isAuthenticated()">
+				<div class="form-group">
+					<div class="welcome-message">
+           				<label>Welcome!</label>
+			            <div>환영합니다, <strong>${nickname}</strong>님!<br />즐거운 시간 되세요.</div>
+			        </div>
+				</div>
+				<form id="sidebar-logoutForm" action="/api/user/logout" method="post">
+					<button type="submit" class="btn btn-primary-custom btn-block">로그아웃</button>
+				</form>
+				<c:if test="${not empty LOGIN_ADMIN_ID}">
+					<hr>
+					<h4>관리자 메뉴</h4>
+					<ul class="list-group">
+						<li class="list-group-item"><a href="/admin/user/manage">사용자 관리</a></li>
+						<li class="list-group-item"><a href="/admin/category/manage">카테고리 관리</a></li>
+					</ul>
+				</c:if>
+			</sec:authorize>
+			<sec:authorize access="isAnonymous()">
+				<form id="loginForm" action="/api/user/login" method="post">
 					<div class="form-group">
-						<div class="welcome-message">
-            				<label>Welcome!</label>
-				            <div>환영합니다, <strong>${nickname}</strong>님!<br />즐거운 시간 되세요.</div>
-				        </div>
+						<label for="nickname">Nickname</label>
+						<input type="text" class="form-control" id="nickname" name="nickname" placeholder="Enter nickname" autocomplete="current-password">
 					</div>
-					<form id="sidebar-logoutForm" action="/api/user/logout" method="post">
-						<button type="submit" class="btn btn-primary-custom btn-block">로그아웃</button>
-					</form>
-					<c:if test="${not empty LOGIN_ADMIN_ID}">
-						<hr>
-						<h4>관리자 메뉴</h4>
-						<ul class="list-group">
-							<li class="list-group-item"><a href="/admin/user/manage">사용자 관리</a></li>
-							<li class="list-group-item"><a href="/admin/category/manage">카테고리 관리</a></li>
-						</ul>
-					</c:if>
-				</c:when>
-				<c:otherwise>
-					<form id="loginForm" action="/api/user/login" method="post">
-						<div class="form-group">
-							<label for="nickname">Nickname</label>
-							<input type="text" class="form-control" id="nickname" name="nickname" placeholder="Enter nickname" autocomplete="current-password">
-						</div>
-						<div class="form-group">
-							<label for="password">Password</label>
-							<input type="password" class="form-control" id="password" name="password" placeholder="Enter password" autocomplete="current-password">
-						</div>
-						<button type="submit" class="btn btn-primary-custom btn-block">로그인</button>
-					</form>
-				</c:otherwise>
-			</c:choose>
+					<div class="form-group">
+						<label for="password">Password</label>
+						<input type="password" class="form-control" id="password" name="password" placeholder="Enter password" autocomplete="current-password">
+					</div>
+					<button type="submit" class="btn btn-primary-custom btn-block">로그인</button>
+				</form>
+			</sec:authorize>
 			<hr>
             <h4>사이트 메뉴</h4>
             <ul class="list-group">
@@ -110,11 +109,48 @@
 		let categoryId = '0';
 		
 		// 로그인
-		$("#loginForm").on("submit", function(e) {
+		$("#loginForm").on("submit", function (e) {
+		    e.preventDefault();
+		
+		    let nickname = $("#nickname").val().trim();
+		    let password = $("#password").val();
+		
+		    if (!nickname || !password) {
+		        alert("닉네임과 비밀번호를 입력하세요.");
+		        return;
+		    }
+		
+		    $.ajax({
+		        type: "POST",
+		        url: "/api/user/public/login",
+		        contentType: "application/json",
+		        data: JSON.stringify({
+		            "nickname": nickname,
+		            "password": password,
+		        }),
+		        success: function (response) {
+		            if (response.code === "SUCCESS") {
+		                location.href = "/";
+		            } else {
+		                alert("로그인에 실패했습니다. 닉네임과 비밀번호를 확인하세요.");
+		            }
+		        },
+		        error: function (jqXHR, textStatus, errorThrown) {
+		            console.error("Error:", textStatus, errorThrown);
+		            alert("로그인 중 오류가 발생했습니다. 다시 시도하세요.");
+		        },
+		        complete: function () {
+		            $("#nickname").val("");
+		            $("#password").val("");
+		        },
+		    });
+		});
+
+		/* $("#loginForm").on("submit", function(e) {
 			e.preventDefault();
 			let nickname = $("#nickname").val().trim();
 			let password = $("#password").val();
-			$.post("/api/user/login", {
+			$.post("/api/user/public/login", {
 				"nickname": nickname,
 				"password": password
 			}).done(function(response) {
@@ -130,7 +166,7 @@
 				$("#nickname").val("");
 				$("#password").val("");
 			});
-		});
+		}); */
 	
 		// 로그아웃
 		$("#sidebar-logoutForm").on("submit", function(e) {
@@ -189,7 +225,7 @@
 	 	// 게시글 데이터 로드 콜백 함수
 	    function loadData(params) {
 	        return $.ajax({
-	            url: '/api/post',
+	            url: '/api/post/public',
 	            type: 'GET',
 	            data: {...params, categoryId: categoryId}
 	        });

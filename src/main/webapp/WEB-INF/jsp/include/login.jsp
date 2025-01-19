@@ -30,7 +30,7 @@
 			const nickname = $("#nickname").val();
 			const password = $("#password").val();
 
-			$.post("/api/user/login", {
+			$.post("/api/user/public/login", {
 				"nickname" : nickname,
 				"password" : password
 			}).done(function(response) {

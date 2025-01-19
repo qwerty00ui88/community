@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.community.category.application.CategoryService;
 import com.community.category.domain.CategoryEntity;
-import com.community.common.aop.LoginCheck;
 
 @Controller
 @RequestMapping("/admin/category")
@@ -20,7 +19,7 @@ public class AdminCategoryController {
 	private CategoryService categoryService;
 	
 	// (관리자용) 카테고리 관리 페이지
-	@LoginCheck
+//	@LoginCheck
 	@GetMapping("/manage")
 	public String userManagement(Model model) {
 		List<CategoryEntity> categoryList = categoryService.getCategoryList();

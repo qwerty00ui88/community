@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.community.comment.application.CommentService;
 import com.community.comment.domain.CommentEntity;
-import com.community.common.aop.LoginCheck;
 import com.community.common.presentation.dto.CommonResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,8 +26,8 @@ public class CommentRestController {
 	private CommentService commentService;
 
 	// 댓글 생성
-	@LoginCheck
-	@PostMapping
+//	@LoginCheck
+	@PostMapping("/auth")
 	@Operation(summary = "댓글 생성")
 	public ResponseEntity<CommonResponse<CommentEntity>> createComment(
 			@RequestParam(name = "id", required = false) Integer userId, @RequestParam("postId") int postId,
@@ -40,8 +39,8 @@ public class CommentRestController {
 	}
 
 	// 댓글 수정
-	@LoginCheck
-	@PutMapping("/{commentId}")
+//	@LoginCheck
+	@PutMapping("/auth/{commentId}")
 	@Operation(summary = "댓글 수정")
 	public ResponseEntity<CommonResponse<CommentEntity>> updateComment(
 			@RequestParam(name = "id", required = false) Integer userId, @PathVariable("commentId") int commentId,
@@ -51,9 +50,9 @@ public class CommentRestController {
 		return ResponseEntity.ok(commonResponse);
 	}
 
-	// 댓글 삭제
-	@LoginCheck
-	@DeleteMapping("/{commentId}")
+	// 댓글 삭제 !!!!!!!사용자면 본인인지 검사, 관리자면 그냥 삭제 로직 추가 필요
+//	@LoginCheck
+	@DeleteMapping("/auth/{commentId}")
 	@Operation(summary = "댓글 삭제")
 	public ResponseEntity<CommonResponse<CommentEntity>> deleteCommentByIdAndUserId(
 			@RequestParam(name = "id", required = false) Integer userId, @PathVariable("commentId") int commentId) {
@@ -62,15 +61,15 @@ public class CommentRestController {
 		return ResponseEntity.ok(commonResponse);
 	}
 
-	// 관라자용 댓글 삭제
-	@LoginCheck(type = LoginCheck.UserType.ADMIN)
-	@DeleteMapping("/admin/{commentId}")
-	@Operation(summary = "(관리자용) 댓글 삭제")
-	public ResponseEntity<CommonResponse<Void>> deleteCommentById(
-			@RequestParam(name = "id", required = false) Integer userId, @PathVariable("commentId") int commentId) {
-		commentService.deleteCommentById(commentId);
-		CommonResponse<Void> commonResponse = CommonResponse.success("댓글 삭제 성공", null);
-		return ResponseEntity.ok(commonResponse);
-	}
+//	// 관라자용 댓글 삭제
+////	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+//	@DeleteMapping("/admin/{commentId}")
+//	@Operation(summary = "(관리자용) 댓글 삭제")
+//	public ResponseEntity<CommonResponse<Void>> deleteCommentById(
+//			@RequestParam(name = "id", required = false) Integer userId, @PathVariable("commentId") int commentId) {
+//		commentService.deleteCommentById(commentId);
+//		CommonResponse<Void> commonResponse = CommonResponse.success("댓글 삭제 성공", null);
+//		return ResponseEntity.ok(commonResponse);
+//	}
 
 }
