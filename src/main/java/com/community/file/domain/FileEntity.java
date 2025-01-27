@@ -59,7 +59,7 @@ public class FileEntity {
 	private ZonedDateTime updatedAt;
 
 	@Transient
-	private MetadataDTO metadataObject; // 객체로 변환된 값
+	private MetadataDTO metadataObject;
 
 	// 데이터 로드 시 JSON -> 객체 변환
 	@PostLoad

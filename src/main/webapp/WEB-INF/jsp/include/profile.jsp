@@ -1,8 +1,12 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-<c:set var="isAdminViewingOtherProfile" value="${not empty LOGIN_ADMIN_ID && LOGIN_ADMIN_ID != profile.user.id}" />
+<c:set var="isAdminViewingOtherProfile" value="false" />
+<sec:authorize access="hasRole('ROLE_ADMIN')">
+    <c:set var="isAdminViewingOtherProfile" value="${authentication.principal.id != profile.user.id}" />
+</sec:authorize>
 
 <div class="container mt-5">
     <div class="profile-header">
@@ -22,12 +26,12 @@
                 <div class="card-header">비밀번호 변경</div>
                 <div class="card-body">
                     <form id="updatePasswordForm">
-                        <c:if test="${!isAdminViewingOtherProfile}">
+                        <sec:authorize access="authentication.principal.id == ${profile.user.id}">
                             <div class="form-group">
                                 <label for="beforePassword">현재 비밀번호</label>
                                 <input type="password" class="form-control" id="beforePassword" name="beforePassword" required>
                             </div>
-                        </c:if>
+                        </sec:authorize>
                         <div class="form-group">
                             <label for="afterPassword">새 비밀번호</label>
                             <input type="password" class="form-control" id="afterPassword" name="afterPassword" required>
@@ -148,13 +152,10 @@
                 return;
             }
 
-            const url = isAdminViewingOtherProfile ? "/api/user/admin/updatePassword" : "/api/user/updatePassword";
-            const data = isAdminViewingOtherProfile ? {
+            const url = "/api/user/auth/updatePassword";
+            const data = {
                 "id": ${profile.user.id},
-                "afterPassword": afterPassword,
-                "afterPasswordCheck": afterPasswordCheck
-            } : {
-                "beforePassword": beforePassword,
+                "beforePassword": beforePassword || null,
                 "afterPassword": afterPassword,
                 "afterPasswordCheck": afterPasswordCheck
             };
@@ -167,7 +168,7 @@
                     alert("비밀번호가 성공적으로 변경되었습니다.");
                     if(${isAdminViewingOtherProfile} == false) {
                         $.ajax({
-                            url: "/user/logout",
+                            url: "/user/auth/logout",
                             type: "POST"
                         });
                         location.href = "/login";
@@ -195,15 +196,13 @@
             if (!confirm("정말로 계정을 삭제하시겠습니까?")) {
                 return;
             }
-            const url = isAdminViewingOtherProfile ? "/api/user/admin" : "/api/user";
-            const data = isAdminViewingOtherProfile ? {
-                "id": ${profile.user.id}
-            } : {
-                "password": $("#password").val()
+            const data = {
+                "id": ${profile.user.id},
+            	"password": $("#password").val() || null
             };
 
             $.ajax({
-                url: url,
+                url: "/api/user/auth",
                 type: "DELETE",
                 data: data,
                 success: function(response) {

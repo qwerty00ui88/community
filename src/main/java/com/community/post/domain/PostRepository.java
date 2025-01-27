@@ -6,9 +6,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-
-import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface PostRepository extends JpaRepository<PostEntity, Integer> {
 
@@ -16,6 +15,9 @@ public interface PostRepository extends JpaRepository<PostEntity, Integer> {
 
 	public Optional<PostEntity> findByIdAndStatusNot(int id, PostStatus status);
 
+	@Query("SELECT p.userId FROM PostEntity p WHERE p.id = :postId")
+	public Optional<Integer> findUserIdById(@Param("postId") int id);
+	
 	public List<PostEntity> findTop10ByStatusNotAndCategoryIdInOrderByViewsDesc(PostStatus status,
 			List<Long> categoryIdList);
 

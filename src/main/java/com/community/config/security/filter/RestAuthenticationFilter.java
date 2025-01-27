@@ -42,18 +42,14 @@ public class RestAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, IOException {
-
 		if (!HttpMethod.POST.name().equals(request.getMethod()) || !WebUtil.isAjax(request)) {
 			throw new IllegalArgumentException("Authentication method not supported");
 		}
-
-		UserDTO accountDto = objectMapper.readValue(request.getReader(), UserDTO.class);
-
-		if (!StringUtils.hasText(accountDto.getNickname()) || !StringUtils.hasText(accountDto.getPassword())) {
-			throw new AuthenticationServiceException("Username or Password not provided");
+		UserDTO userDto = objectMapper.readValue(request.getReader(), UserDTO.class);
+		if (!StringUtils.hasText(userDto.getNickname()) || !StringUtils.hasText(userDto.getPassword())) {
+			throw new AuthenticationServiceException("Nickname or Password not provided");
 		}
-		RestAuthenticationToken token = new RestAuthenticationToken(accountDto.getNickname(), accountDto.getPassword());
-
+		RestAuthenticationToken token = new RestAuthenticationToken(userDto.getNickname(), userDto.getPassword());
 		return this.getAuthenticationManager().authenticate(token);
 	}
 

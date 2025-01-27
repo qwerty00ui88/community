@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,14 +22,12 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-//    private final AuthenticationProvider authenticationProvider;
 	private final AuthenticationProvider restAuthenticationProvider;
-//    private final AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource;
 	private final RestAuthenticationSuccessHandler restSuccessHandler;
 	private final RestAuthenticationFailureHandler restFailureHandler;
-//    private final AuthorizationManager<RequestAuthorizationContext> authorizationManager;
 
 	@Bean
 	public SecurityFilterChain restSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -38,13 +37,13 @@ public class SecurityConfig {
 		authenticationManagerBuilder.authenticationProvider(restAuthenticationProvider);
 		AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-		http.securityMatcher("/api/**")
+		http.securityMatcher("/**")
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
-						.requestMatchers("/api/*/public/**").permitAll()
-						.requestMatchers("/api/*/auth/**").authenticated()
+						.requestMatchers("/WEB-INF/**", "/static/**").permitAll()
+						.requestMatchers("/", "/login", "/signup", "/category/**", "/board/**", "/search/**", "/api/*/public/**").permitAll()
+						.requestMatchers("/profile/**", "/api/*/auth/**").authenticated()
 						.requestMatchers("/api/*/member/**").hasAuthority("ROLE_USER")
-						.requestMatchers("/api/*/admin/**").hasAuthority("ROLE_ADMIN")
+						.requestMatchers("/admin/**", "/api/*/admin/**").hasAuthority("ROLE_ADMIN")
 						.anyRequest().authenticated())
 				.csrf(AbstractHttpConfigurer::disable)
 				.authenticationManager(authenticationManager)

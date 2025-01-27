@@ -20,13 +20,10 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HomeDTO {	
-	// 홈 활성화 카테고리
 	private List<CategoryEntity> showOnHomeCategoryList;
     
-    // 최신 + 페이징
     private RecentPostsDTO recentPosts;
     
-    // 조회수 순으로 정렬된 게시물
     private List<PostEntity> mostViewedPosts;
 }
 

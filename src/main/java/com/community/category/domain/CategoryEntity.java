@@ -35,7 +35,7 @@ public class CategoryEntity {
 
 	@Builder.Default
 	@Enumerated(EnumType.STRING)
-	private CategoryStatus status = CategoryStatus.ACTIVE;;
+	private CategoryStatus status = CategoryStatus.ACTIVE;
 
 	@Column(name = "showOnHome")
 	private boolean showOnHome;

@@ -40,32 +40,20 @@ public class CommentService {
 	}
 
 	// 댓글 수정
-	public CommentEntity updateCommentByIdAndUserId(int commentId, int userId, String contents) {
-		CommentEntity comment = commentRepository.findByIdAndUserId(commentId, userId)
+	public CommentEntity updateCommentById(int commentId, String contents) {
+		CommentEntity comment = commentRepository.findById(commentId)
 				.orElseThrow(() -> new CommentNotFoundException("댓글을 찾을 수 없습니다."));
-
 		if (comment.getStatus() == CommentStatus.DELETED) {
 			throw new InvalidCommentException("삭제된 댓글은 수정할 수 없습니다.");
 		}
-
 		comment = comment.toBuilder().contents(contents).status(CommentStatus.EDITED).build();
 		return commentRepository.save(comment);
 	}
 
-	// 댓글 삭제(userId 체크)
-	public CommentEntity deleteCommentByIdAndUserId(int commentId, int userId) {
-		CommentEntity comment = commentRepository.findByIdAndUserId(commentId, userId)
-				.orElseThrow(() -> new CommentNotFoundException("댓글을 찾을 수 없습니다."));
-
-		comment = comment.toBuilder().status(CommentStatus.DELETED).build();
-		return commentRepository.save(comment);
-	}
-
-	// 댓글 삭제(userId 체크 X)
+	// 댓글 삭제
 	public CommentEntity deleteCommentById(int commentId) {
 		CommentEntity comment = commentRepository.findById(commentId)
 				.orElseThrow(() -> new CommentNotFoundException("댓글을 찾을 수 없습니다."));
-
 		comment = comment.toBuilder().status(CommentStatus.DELETED).build();
 		return commentRepository.save(comment);
 	}

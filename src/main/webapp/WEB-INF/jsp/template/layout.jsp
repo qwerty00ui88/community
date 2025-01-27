@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
 <html>
@@ -23,12 +24,13 @@
 <%-- Common CSS --%>
 <link rel="stylesheet" type="text/css" href="/static/css/style.css">
 <%-- 사용자별 CSS --%>
-<c:if test="${not empty LOGIN_ADMIN_ID}">
+<sec:authorize access="hasRole('ROLE_ADMIN')">
 	<link rel="stylesheet" type="text/css" href="/static/css/admin.css">
-</c:if>
+</sec:authorize>
 
 </head>
-<body class="${LOGIN_ADMIN_ID != null ? 'admin-theme' : 'user-theme'}">
+<body class="<sec:authorize access="hasRole('ROLE_ADMIN')">admin-theme</sec:authorize>
+              <sec:authorize access="!hasRole('ROLE_ADMIN')">user-theme</sec:authorize>">
 	<div class="container">
 		<header class="text-center mb-4">
 			<jsp:include page="../common/header.jsp" />

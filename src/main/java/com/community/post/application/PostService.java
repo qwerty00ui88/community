@@ -19,7 +19,6 @@ import com.community.post.PostNotFoundException;
 import com.community.post.domain.PostEntity;
 import com.community.post.domain.PostRepository;
 import com.community.post.domain.PostStatus;
-import com.community.user.UnauthorizedException;
 import com.community.user.domain.UserEntity;
 import com.community.user.domain.UserRepository;
 
@@ -94,22 +93,17 @@ public class PostService {
 			return postRepository.findByContentsContainingAndStatusNot(keyword, PostStatus.DELETED, pageable);
 		} else if (field.equals("nickname")) {
 			List<UserEntity> userList = userRepository.findByNicknameContaining(keyword);
-			List<Integer> userIdList = userList.stream().map(UserEntity::getId) // UserEntity에서 getId 메소드를 사용하여 userId를
-																				// 추출
-					.collect(Collectors.toList()); // 결과를 List<Integer>로 수집
+			List<Integer> userIdList = userList.stream().map(UserEntity::getId).collect(Collectors.toList());
 			return postRepository.findByUserIdInAndStatusNot(userIdList, PostStatus.DELETED, pageable);
 		}
 		return Page.empty();
 	}
 
 	// 게시글 수정
-	public PostEntity updatePostByIdAndUserId(int postId, int userId, Integer categoryId, String title, String contents,
+	public PostEntity updatePostById(int postId, Integer categoryId, String title, String contents,
 			MultipartFile[] newFiles, Integer[] removedFiles) {
 		PostEntity post = postRepository.findById(postId)
 				.orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
-		if (post.getUserId() != userId) {
-			throw new UnauthorizedException("이 게시글을 수정할 권한이 없습니다.");
-		}
 		if (post.getStatus() != PostStatus.DELETED) {
 			post = post.toBuilder().categoryId(categoryId).title(title).contents(contents).status(PostStatus.EDITED)
 					.build();
@@ -122,15 +116,6 @@ public class PostService {
 			fileService.deleteFiles(removedFiles);
 		}
 		return post;
-	}
-
-	// 게시글 삭제(userId 체크)
-	public void deletePostByIdAndUserId(int postId, int userId) {
-		PostEntity post = postRepository.findByIdAndUserId(postId, userId)
-				.orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
-
-		post = post.toBuilder().status(PostStatus.DELETED).build();
-		postRepository.save(post);
 	}
 
 	// 게시글 삭제(userId 체크 X)

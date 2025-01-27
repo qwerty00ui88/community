@@ -23,8 +23,8 @@
                         <td>
 						    <div class="input-group">
 						        <select class="form-control status-select" data-user-id="${user.id}">
-						            <option value="USER" ${user.status == 'USER' ? 'selected' : ''}>USER</option>
-						            <option value="ADMIN" ${user.status == 'ADMIN' ? 'selected' : ''}>ADMIN</option>
+						            <option value="ACTIVE" ${user.status == 'ACTIVE' ? 'selected' : ''}>ACTIVE</option>
+						            <option value="INACTIVE" ${user.status == 'INACTIVE' ? 'selected' : ''}>INACTIVE</option>
 						            <option value="DELETED" ${user.status == 'DELETED' ? 'selected' : ''}>DELETED</option>
 						        </select>
 						        <div class="input-group-append">
@@ -33,7 +33,7 @@
 						    </div>
 						</td>
                         <td>
-                            <a href="/profile?id=${user.id}" class="btn btn-sm btn-primary-custom">프로필 보기</a>
+                            <a href="/profile/${user.id}" class="btn btn-sm btn-primary-custom">프로필 보기</a>
                         </td>
                     </tr>
                 </c:forEach>

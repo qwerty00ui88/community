@@ -27,12 +27,12 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
 		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		response.setContentType("application/json;charset=UTF-8");
 		
-		UserDTO accountDto = (UserDTO) authentication.getPrincipal();
-		accountDto.setPassword(null);
-		CommonResponse<UserDTO> commonResponse = CommonResponse.success("인증 성공", accountDto);
+		UserDTO userDto = (UserDTO) authentication.getPrincipal();
+		userDto.setPassword(null);
+		CommonResponse<UserDTO> commonResponse = CommonResponse.success("인증 성공", userDto);
 		
 		mapper.writeValue(response.getWriter(), commonResponse);
-		request.getSession().setAttribute("nickname", accountDto.getNickname());
+		request.getSession().setAttribute("nickname", userDto.getNickname());
 		clearAuthenticationAttributes(request);
 	}
 

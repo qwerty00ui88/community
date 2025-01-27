@@ -29,7 +29,6 @@ public class FormUserDetailsService implements UserDetailsService {
 	@Override
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
 		UserEntity account = userRepository.findByNickname(username);
 		if (account == null) {
 			throw new UsernameNotFoundException("No user found with username: " + username);
@@ -38,7 +37,6 @@ public class FormUserDetailsService implements UserDetailsService {
 				.collect(Collectors.toSet()).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 		ModelMapper mapper = new ModelMapper();
 		UserDTO accountDto = mapper.map(account, UserDTO.class);
-
 		return new AccountContext(accountDto, authorities);
 	}
 }

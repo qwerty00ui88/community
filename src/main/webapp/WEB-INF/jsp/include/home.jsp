@@ -15,14 +15,14 @@
 				<form id="sidebar-logoutForm" action="/api/user/logout" method="post">
 					<button type="submit" class="btn btn-primary-custom btn-block">로그아웃</button>
 				</form>
-				<c:if test="${not empty LOGIN_ADMIN_ID}">
+				<sec:authorize access="hasRole('ROLE_ADMIN')">
 					<hr>
 					<h4>관리자 메뉴</h4>
 					<ul class="list-group">
 						<li class="list-group-item"><a href="/admin/user/manage">사용자 관리</a></li>
 						<li class="list-group-item"><a href="/admin/category/manage">카테고리 관리</a></li>
 					</ul>
-				</c:if>
+				</sec:authorize>
 			</sec:authorize>
 			<sec:authorize access="isAnonymous()">
 				<form id="loginForm" action="/api/user/login" method="post">
@@ -83,9 +83,9 @@
 			</div>
 			<div class="d-flex justify-content-between align-items-center mt-3">
 				<h4>글 목록</h4>
-				<c:if test="${not empty LOGIN_USER_ID || not empty LOGIN_ADMIN_ID}">
+				<sec:authorize access="isAuthenticated()">
 					<a href="/board/create" class="btn btn-primary">글쓰기</a>
-				</c:if>
+				</sec:authorize>
 			</div>
 			<ul class="list-group mt-3" id="post-list-all">
 				<c:forEach items="${homeDTO.recentPosts.postList}" var="post">
@@ -145,35 +145,29 @@
 		        },
 		    });
 		});
-
-		/* $("#loginForm").on("submit", function(e) {
-			e.preventDefault();
-			let nickname = $("#nickname").val().trim();
-			let password = $("#password").val();
-			$.post("/api/user/public/login", {
-				"nickname": nickname,
-				"password": password
-			}).done(function(response) {
-				if (response.code === "SUCCESS") {
-					location.href = "/";
-				} else {
-					alert("로그인에 실패했습니다. 닉네임과 비밀번호를 확인하세요.");
-				}
-			}).fail(function(_, _, error) {
-				console.log(error);
-				alert("로그인 중 오류가 발생했습니다.");
-			}).always(function() {
-				$("#nickname").val("");
-				$("#password").val("");
-			});
-		}); */
 	
-		// 로그아웃
+		// 로그아웃		
 		$("#sidebar-logoutForm").on("submit", function(e) {
 			e.preventDefault();
-			$.post("/api/user/logout").always(function() {
-				location.reload();
-			});
+			$.ajax({
+		        type: "POST",
+		        url: "/api/user/auth/logout",
+		        contentType: "application/json",
+		        success: function (response) {
+		            if (response.code === "SUCCESS") {
+		                location.href = "/";
+		            } else {
+		                alert("로그아웃에 실패했습니다.");
+		            }
+		        },
+		        error: function (jqXHR, textStatus, errorThrown) {
+		            console.error("Error:", textStatus, errorThrown);
+		            alert("로그아웃 중 오류가 발생했습니다. 다시 시도하세요.");
+		        },
+		        complete: function () {
+		        	location.href = "/";
+		        },
+		    });
 		});
 		
 		// 페이지네이션
@@ -207,7 +201,7 @@
 	    
 	    });
 
-	    
+		
 	    
 	    // *** 함수 ***
 	 	// 게시글 검색 함수

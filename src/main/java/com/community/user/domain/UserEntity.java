@@ -19,6 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +37,7 @@ import lombok.ToString;
 @Table(name = "user")
 @Entity
 public class UserEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -48,22 +50,27 @@ public class UserEntity {
 
 	@Builder.Default
 	@Enumerated(EnumType.STRING)
-	@Column(name = "status")
-	private UserStatus status = UserStatus.USER;
+	@Column(nullable = false)
+	private UserStatus status = UserStatus.ACTIVE;
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
+	@JoinTable(name = "account_roles", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "role_id") })
+	@ToString.Exclude
+	private Set<Role> userRoles = new HashSet<>();
 
 	@CreationTimestamp
-	@Column(name = "createdAt")
+	@Column(name = "createdAt", updatable = false)
 	private ZonedDateTime createdAt;
 
 	@UpdateTimestamp
 	@Column(name = "updatedAt")
 	private ZonedDateTime updatedAt;
-	
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
-    @JoinTable(name = "account_roles", joinColumns = {@JoinColumn(name = "account_id")}, inverseJoinColumns = {
-            @JoinColumn(name = "role_id")})
-    @ToString.Exclude
-    private Set<Role> userRoles = new HashSet<>();
+
+	@PrePersist
+	private void prePersist() {
+		if (this.status == null) {
+			this.status = UserStatus.ACTIVE;
+		}
+	}
 }
-
-

@@ -2,10 +2,7 @@ package com.community.user.domain;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
-
-import com.community.config.security.domain.Resources;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -14,7 +11,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,10 +39,6 @@ public class Role implements Serializable {
 
 	@Column(name = "is_expression")
 	private String isExpression;
-
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "roleSet", cascade = CascadeType.ALL)
-	@OrderBy("orderNum desc")
-	private Set<Resources> resourcesSet = new LinkedHashSet<>();
 
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "userRoles", cascade = CascadeType.ALL)
 	private Set<UserEntity> accounts = new HashSet<>();

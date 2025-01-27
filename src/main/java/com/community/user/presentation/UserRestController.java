@@ -4,7 +4,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.community.common.presentation.dto.CommonResponse;
-import com.community.common.util.SessionUtil;
 import com.community.user.application.UserService;
 import com.community.user.application.dto.UserDTO;
 import com.community.user.application.dto.UserResponseDTO;
@@ -24,7 +28,8 @@ import com.community.user.domain.UserStatus;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "회원 관련 API")
@@ -35,20 +40,9 @@ public class UserRestController {
 
 	@Autowired
 	private UserService userService;
-    private final PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
-
-	// 회원가입
-//	@PostMapping("/public/signup")
-//	@Operation(summary = "회원가입")
-//	public ResponseEntity<CommonResponse<UserResponseDTO>> signUp(@RequestParam("name") String name,
-//			@RequestParam("nickname") String nickname, @RequestParam("password") String password) {
-//		UserEntity user = userService.createUser(name, nickname, password);
-//		UserResponseDTO userResponseDTO = new UserResponseDTO(user);
-//		CommonResponse<UserResponseDTO> commonResponse = CommonResponse.success("회원 생성 성공", userResponseDTO);
-//		return ResponseEntity.ok(commonResponse);
-//	}
-
+	// 회원가입***
 	@PostMapping("/public/signup")
 	@Operation(summary = "회원가입")
 	public ResponseEntity<CommonResponse<UserResponseDTO>> signUp(UserDTO accountDto) {
@@ -60,35 +54,21 @@ public class UserRestController {
 		return ResponseEntity.ok(commonResponse);
 	}
 
-	// 로그인
-//	@PostMapping("/public/login")
-//	@Operation(summary = "로그인")
-//	public ResponseEntity<CommonResponse<UserResponseDTO>> login(@RequestParam("nickname") String nickname,
-//			@RequestParam("password") String password, HttpSession session) {
-//
-//		UserEntity user = userService.getUserByNicknameAndPasswordAndStatusNot(nickname, password, UserStatus.DELETED);
-//
-//		if (user.getStatus() == UserStatus.ADMIN) {
-//			SessionUtil.setLoginAdminId(session, user.getId());
-//		} else {
-//			SessionUtil.setLoginUserId(session, user.getId());
-//		}
-//		SessionUtil.setLoginNickname(session, user.getNickname());
-//
-//		UserResponseDTO userResponseDTO = new UserResponseDTO(user);
-//		CommonResponse<UserResponseDTO> commonResponse = CommonResponse.success("로그인 성공", userResponseDTO);
-//		return ResponseEntity.ok(commonResponse);
-//	}
-
-	// 로그아웃
+	// 로그아웃***
 	@PostMapping("/auth/logout")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@Operation(summary = "로그아웃")
-	public void logout(HttpSession session) {
-		SessionUtil.clear(session);
+	public ResponseEntity<CommonResponse<Void>> logout(HttpServletRequest request, HttpServletResponse response) {
+		Authentication authentication = SecurityContextHolder.getContextHolderStrategy().getContext()
+				.getAuthentication();
+		if (authentication != null) {
+			new SecurityContextLogoutHandler().logout(request, response, authentication);
+		}
+		CommonResponse<Void> commonResponse = CommonResponse.success("닉네임 중복 확인 완료", null);
+		return ResponseEntity.ok(commonResponse);
 	}
 
-	// 닉네임 중복 확인
+	// 닉네임 중복 확인***
 	@GetMapping("/public/isDuplicatedNickname")
 	@Operation(summary = "닉네임 중복 확인")
 	public ResponseEntity<CommonResponse<Boolean>> isDuplicatedNickname(@RequestParam("nickname") String nickname) {
@@ -101,33 +81,19 @@ public class UserRestController {
 		return ResponseEntity.ok(commonResponse);
 	}
 
-	// 비밀번호 수정(이전 비밀번호 체크) !!!!!!!사용자면 본인인지 검사, 관리자면 그냥 수정 로직 추가 필요
-//	@LoginCheck
+	// 비밀번호 수정***
 	@PatchMapping("/auth/updatePassword")
+	@PreAuthorize("@accessControl.isOwnerOrAdmin(#userId, authentication)")
 	@Operation(summary = "비밀번호 수정")
-	public ResponseEntity<CommonResponse<Void>> updateUserPassword(
-			@RequestParam(name = "id", required = false) Integer id,
+	public ResponseEntity<CommonResponse<Void>> updateUserPassword(@P("userId") @RequestParam(name = "id") Integer id,
 			@RequestParam("beforePassword") String beforePassword, @RequestParam("afterPassword") String afterPassword,
-			@RequestParam("afterPasswordCheck") String afterPasswordCheck) {
-		userService.updatePassword(id, beforePassword, afterPassword, afterPasswordCheck);
+			@RequestParam("afterPasswordCheck") String afterPasswordCheck, Authentication authentication) {
+		userService.updatePassword(id, beforePassword, afterPassword, afterPasswordCheck, authentication);
 		CommonResponse<Void> commonResponse = CommonResponse.success("비밀번호가 성공적으로 변경되었습니다.", null);
 		return ResponseEntity.ok(commonResponse);
 	}
 
-//	// 관리자용 비밀번호 수정(이전 비밀번호 체크X)
-////	@LoginCheck(type = LoginCheck.UserType.ADMIN)
-//	@PatchMapping("/admin/updatePassword")
-//	@Operation(summary = "(관리자용) 비밀번호 수정")
-//	public ResponseEntity<CommonResponse<Void>> updateUserPasswordByUserId(@RequestParam("id") Integer id,
-//			@RequestParam("afterPassword") String afterPassword,
-//			@RequestParam("afterPasswordCheck") String afterPasswordCheck) {
-//		userService.updatePassword(id, afterPassword, afterPasswordCheck);
-//		CommonResponse<Void> commonResponse = CommonResponse.success("비밀번호가 성공적으로 변경되었습니다.", null);
-//		return ResponseEntity.ok(commonResponse);
-//	}
-
-	// 회원 상태 수정
-//	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+	// 회원 상태 수정***
 	@PatchMapping("/admin/updateUserStatus")
 	@Operation(summary = "(관리자용) 회원 상태 수정")
 	public ResponseEntity<CommonResponse<Void>> updateUserStatusByUserId(@RequestParam("id") Integer id,
@@ -137,26 +103,19 @@ public class UserRestController {
 		return ResponseEntity.ok(commonResponse);
 	}
 
-	// 회원 탈퇴 !!!!!!!사용자면 본인인지 검사, 관리자면 그냥 삭제 로직 추가 필요
-//	@LoginCheck
+	// 회원 탈퇴***
 	@DeleteMapping("/auth")
+	@PreAuthorize("@accessControl.isOwnerOrAdmin(#userId, authentication)")
 	@Operation(summary = "회원 탈퇴")
 	public ResponseEntity<CommonResponse<Void>> deleteUserByIdAndPassword(
-			@RequestParam(name = "id", required = false) Integer id, @RequestParam("password") String password,
-			HttpSession session) {
-		userService.deleteUserByIdAndPassword(id, password);
-		SessionUtil.clear(session);
+			@P("userId") @RequestParam(name = "id") Integer id, @RequestParam("password") String password,
+			HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+		userService.deleteUserByIdAndPassword(id, password, authentication);
+		if (authentication != null) {
+			new SecurityContextLogoutHandler().logout(request, response, authentication);
+		}
 		CommonResponse<Void> commonResponse = CommonResponse.success("사용자 탈퇴가 성공적으로 처리되었습니다.", null);
 		return ResponseEntity.ok(commonResponse);
 	}
 
-//	// 관리자용 회원 탈퇴
-////	@LoginCheck(type = LoginCheck.UserType.ADMIN)
-//	@DeleteMapping("/admin")
-//	@Operation(summary = "(관리자용) 회원 탈퇴")
-//	public ResponseEntity<CommonResponse<Void>> deleteUserById(@RequestParam(name = "id") Integer id) {
-//		userService.deleteUserById(id);
-//		CommonResponse<Void> commonResponse = CommonResponse.success("사용자가 성공적으로 삭제되었습니다.", null);
-//		return ResponseEntity.ok(commonResponse);
-//	}
 }

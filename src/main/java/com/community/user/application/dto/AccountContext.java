@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.community.user.domain.UserStatus;
+
 import lombok.Data;
 
 @Data
@@ -51,5 +53,13 @@ public class AccountContext implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+	
+	public Integer getId() {
+	    return accountDto.getId();
+	}
+	
+	public UserStatus getStatus() {
+	    return accountDto.getStatus();
 	}
 }

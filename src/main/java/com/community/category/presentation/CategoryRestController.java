@@ -26,8 +26,7 @@ public class CategoryRestController {
 	@Autowired
 	private CategoryService categoryService;
 
-	// 카테고리 생성
-//	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+	// 카테고리 생성***
 	@PostMapping
 	@Operation(summary = "(관리자용) 카테고리 생성")
 	public ResponseEntity<CommonResponse<CategoryEntity>> createCategory(
@@ -38,8 +37,7 @@ public class CategoryRestController {
 		return ResponseEntity.ok(commonResponse);
 	}
 
-	// 카테고리 수정
-//	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+	// 카테고리 수정***
 	@PatchMapping("/update")
 	@Operation(summary = "(관리자용) 카테고리 수정")
 	public ResponseEntity<CommonResponse<CategoryEntity>> updateCategory(
@@ -50,8 +48,7 @@ public class CategoryRestController {
 		return ResponseEntity.ok(commonResponse);
 	}
 
-	// 홈 표시 체크박스
-//	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+	// 홈 표시 체크박스***
 	@PatchMapping("/showOnHome")
 	@Operation(summary = "(관리자용) 카테고리 홈 표시 체크박스 토클")
 	public ResponseEntity<CommonResponse<CategoryEntity>> updateCategory(
@@ -62,8 +59,7 @@ public class CategoryRestController {
 		return ResponseEntity.ok(commonResponse);
 	}
 
-	// 카테고리 삭제
-//	@LoginCheck(type = LoginCheck.UserType.ADMIN)
+	// 카테고리 삭제***
 	@DeleteMapping("/{categoryId}")
 	@Operation(summary = "(관리자용) 카테고리 삭제")
 	public ResponseEntity<CommonResponse<Void>> deleteCategoryById(

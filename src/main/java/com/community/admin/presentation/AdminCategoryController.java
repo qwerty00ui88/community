@@ -17,9 +17,8 @@ public class AdminCategoryController {
 
 	@Autowired
 	private CategoryService categoryService;
-	
-	// (관리자용) 카테고리 관리 페이지
-//	@LoginCheck
+
+	// (관리자용) 카테고리 관리 페이지***
 	@GetMapping("/manage")
 	public String userManagement(Model model) {
 		List<CategoryEntity> categoryList = categoryService.getCategoryList();

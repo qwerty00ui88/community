@@ -79,15 +79,11 @@ public class FileService {
 	public void deleteFile(Integer fileId) {
 		FileEntity fileEntity = fileRepository.findById(fileId)
 				.orElseThrow(() -> new EntityNotFoundException("파일을 찾을 수 없습니다. ID: " + fileId));
-
-		// S3에서 파일 삭제
 		String fileKey = fileEntity.getUrl().substring(fileEntity.getUrl().indexOf(".com/") + 5);
 		amazonS3.deleteObject(bucketName, fileKey);
-
-		// 데이터베이스에서 파일 정보 삭제
 		fileRepository.delete(fileEntity);
 	}
-	
+
 	public void deleteFiles(Integer[] fileIdList) {
 		for (Integer fileId : fileIdList) {
 			deleteFile(fileId);
@@ -99,7 +95,6 @@ public class FileService {
 			MetadataDTO metadata = new MetadataDTO();
 			metadata.setContentType(file.getContentType());
 			metadata.setOriginalFilename(file.getOriginalFilename());
-
 			ObjectMapper objectMapper = new ObjectMapper();
 			return objectMapper.writeValueAsString(metadata);
 		} catch (Exception e) {
