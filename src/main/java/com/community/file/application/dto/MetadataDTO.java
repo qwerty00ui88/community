@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MetadataDTO {
+public class MetadataDto {
 	private String contentType;
 	private String originalFilename;
 }

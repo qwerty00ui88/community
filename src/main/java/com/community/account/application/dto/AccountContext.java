@@ -1,4 +1,4 @@
-package com.community.user.application.dto;
+package com.community.account.application.dto;
 
 import java.util.Collection;
 import java.util.List;
@@ -6,16 +6,16 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.community.user.domain.UserStatus;
+import com.community.account.domain.AccountStatus;
 
 import lombok.Data;
 
 @Data
 public class AccountContext implements UserDetails {
-	private final UserDTO accountDto;
+	private final AccountDto accountDto;
 	private final List<GrantedAuthority> authorities;
 
-	public AccountContext(UserDTO accountDto, List<GrantedAuthority> authorities) {
+	public AccountContext(AccountDto accountDto, List<GrantedAuthority> authorities) {
 		this.accountDto = accountDto;
 		this.authorities = authorities;
 	}
@@ -54,12 +54,12 @@ public class AccountContext implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
-	
+
 	public Integer getId() {
-	    return accountDto.getId();
+		return accountDto.getId();
 	}
-	
-	public UserStatus getStatus() {
-	    return accountDto.getStatus();
+
+	public AccountStatus getStatus() {
+		return accountDto.getStatus();
 	}
 }

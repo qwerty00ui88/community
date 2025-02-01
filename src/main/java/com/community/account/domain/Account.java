@@ -1,4 +1,4 @@
-package com.community.user.domain;
+package com.community.account.domain;
 
 import java.time.ZonedDateTime;
 import java.util.HashSet;
@@ -34,12 +34,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @Builder(toBuilder = true)
-@Table(name = "user")
+@Table(name = "account")
 @Entity
-public class UserEntity {
+public class Account {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private int id;
 
 	private String name;
@@ -51,13 +52,13 @@ public class UserEntity {
 	@Builder.Default
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private UserStatus status = UserStatus.ACTIVE;
+	private AccountStatus status = AccountStatus.ACTIVE;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
-	@JoinTable(name = "account_roles", joinColumns = { @JoinColumn(name = "account_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "role_id") })
+	@JoinTable(name = "account_roles", joinColumns = { @JoinColumn(name = "accountId") }, inverseJoinColumns = {
+			@JoinColumn(name = "roleId") })
 	@ToString.Exclude
-	private Set<Role> userRoles = new HashSet<>();
+	private Set<Role> accountRoles = new HashSet<>();
 
 	@CreationTimestamp
 	@Column(name = "createdAt", updatable = false)
@@ -70,7 +71,7 @@ public class UserEntity {
 	@PrePersist
 	private void prePersist() {
 		if (this.status == null) {
-			this.status = UserStatus.ACTIVE;
+			this.status = AccountStatus.ACTIVE;
 		}
 	}
 }

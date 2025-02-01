@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.community.file.application.dto.MetadataDTO;
+import com.community.file.application.dto.MetadataDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.persistence.Column;
@@ -31,9 +31,10 @@ import lombok.ToString;
 @Builder(toBuilder = true)
 @Table(name = "file")
 @Entity
-public class FileEntity {
+public class File {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private int id;
 
 	private String url;
@@ -59,7 +60,7 @@ public class FileEntity {
 	private ZonedDateTime updatedAt;
 
 	@Transient
-	private MetadataDTO metadataObject;
+	private MetadataDto metadataObject;
 
 	// 데이터 로드 시 JSON -> 객체 변환
 	@PostLoad
@@ -67,7 +68,7 @@ public class FileEntity {
 		if (this.metadata != null) {
 			try {
 				ObjectMapper objectMapper = new ObjectMapper();
-				this.metadataObject = objectMapper.readValue(this.metadata, MetadataDTO.class);
+				this.metadataObject = objectMapper.readValue(this.metadata, MetadataDto.class);
 			} catch (Exception e) {
 				e.printStackTrace();
 				this.metadataObject = null;

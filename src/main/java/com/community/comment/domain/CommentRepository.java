@@ -7,13 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface CommentRepository extends JpaRepository<CommentEntity, Integer> {
+public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
-	public List<CommentEntity> findByUserIdOrderByCreatedAtDesc(int userId);
+	public List<Comment> findByAccountIdOrderByCreatedAtDesc(int accountId);
 
-	public Optional<CommentEntity> findByIdAndUserId(int commentId, int userId);
+	public Optional<Comment> findByIdAndAccountId(int commentId, int accountId);
 
-	@Query("SELECT c.userId FROM CommentEntity c WHERE c.id = :commentId")
-	public Optional<Integer> findUserIdById(@Param("commentId") int id);
+	@Query("SELECT c.accountId FROM Comment c WHERE c.id = :commentId")
+	public Optional<Integer> findAccountIdById(@Param("commentId") int id);
 
 }

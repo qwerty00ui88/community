@@ -4,7 +4,7 @@
 
 <div class="container signup-container">
 	<h2 class="text-center">회원가입</h2>
-	<form id="signupForm" action="/api/user/signup" method="post">
+	<form id="signupForm" action="/api/account/signup" method="post">
 		<div class="form-group">
 			<label for="username">이름</label>
 			<input type="text"
@@ -56,7 +56,7 @@
             
             if (nickname.length > 0) {
                 // 닉네임 중복 확인
-                $.get("/api/user/public/isDuplicatedNickname", { "nickname": nickname })
+                $.get("/api/account/public/isDuplicatedNickname", { "nickname": nickname })
                     .done(function(response) {
                         if (response.data) {
                             validateField("#nickname", false, "이미 사용 중인 닉네임입니다.", "");
@@ -101,7 +101,7 @@
     			const nickname = $("#nickname").val();
     			const password = $("#password").val();
     			
-            	$.post("/api/user/public/signup", {
+            	$.post("/api/account/public/signup", {
     				"name" : name,
     				"nickname" : nickname,
     				"password" : password

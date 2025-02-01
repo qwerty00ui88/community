@@ -16,7 +16,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class FileDTO {
+public class FileDto {
 	private int id;
 	private String url;
 	private String domain;

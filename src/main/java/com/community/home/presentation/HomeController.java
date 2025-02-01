@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.community.home.application.HomeService;
-import com.community.home.application.dto.HomeDTO;
+import com.community.home.application.dto.HomeDto;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -24,8 +24,8 @@ public class HomeController {
 	public String homeView(@RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "size", defaultValue = "10") int size, Model model, HttpSession session) {
 		Pageable pageable = PageRequest.of(page, size);
-		HomeDTO homeDTO = homeService.generateHomeView(pageable);
-		model.addAttribute("homeDTO", homeDTO);
+		HomeDto homeDto = homeService.generateHomeView(pageable);
+		model.addAttribute("homeDto", homeDto);
 		model.addAttribute("viewName", "include/home");
 		return "template/layout";
 	}

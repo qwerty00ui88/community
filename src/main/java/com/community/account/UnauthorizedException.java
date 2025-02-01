@@ -1,4 +1,4 @@
-package com.community.user;
+package com.community.account;
 
 public class UnauthorizedException extends RuntimeException {
     public UnauthorizedException(String message) {

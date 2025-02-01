@@ -16,7 +16,7 @@
 			<sec:authorize access="isAuthenticated()">
 				<li class="nav-item"><a class="nav-link" href="/profile/<sec:authentication property="principal.id" />">프로필</a></li>
 				<li class="nav-item">
-					<form id="nav-logoutForm" action="/api/user/logout" method="post"
+					<form id="nav-logoutForm" action="/api/account/logout" method="post"
 						class="form-inline my-2 my-lg-0 d-flex justify-content-center">
 						<button id="logoutBtn" type="submit"
 							class="btn btn-link nav-link">로그아웃</button>
@@ -38,7 +38,7 @@
 			e.preventDefault();
 			$.ajax({
 		        type: "POST",
-		        url: "/api/user/auth/logout",
+		        url: "/api/account/auth/logout",
 		        contentType: "application/json",
 		        success: function (response) {
 		            if (response.code === "SUCCESS") {

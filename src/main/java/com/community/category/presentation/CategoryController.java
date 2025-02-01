@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.community.category.application.CategoryService;
-import com.community.category.domain.CategoryEntity;
+import com.community.category.domain.Category;
 import com.community.category.domain.CategoryStatus;
 import com.community.common.application.PaginationService;
 import com.community.post.application.PostService;
-import com.community.post.application.dto.RecentPostsDTO;
-import com.community.post.domain.PostEntity;
+import com.community.post.application.dto.RecentPostsDto;
+import com.community.post.domain.Post;
 import com.community.post.domain.PostStatus;
 
 @Controller
@@ -47,15 +47,15 @@ public class CategoryController {
 			@RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "size", defaultValue = "10") int size, Model model) {
 		Pageable pageable = PageRequest.of(page, size);
-		Page<PostEntity> postPage = postService.getPostsByCategoryIdAndStatusNotOrderByCreatedAtDesc(categoryId,
+		Page<Post> postPage = postService.getPostsByCategoryIdAndStatusNotOrderByCreatedAtDesc(categoryId,
 				PostStatus.DELETED, pageable);
-		RecentPostsDTO recentPostsDTO = new RecentPostsDTO(postPage.getContent(),
+		RecentPostsDto recentPostsDto = new RecentPostsDto(postPage.getContent(),
 				paginationService.getPaginationDetails(postPage));
 
-		CategoryEntity category = categoryService.getCategoryByIdAndStatusNot(categoryId, CategoryStatus.DELETED);
+		Category category = categoryService.getCategoryByIdAndStatusNot(categoryId, CategoryStatus.DELETED);
 		model.addAttribute("title", category.getName());
 		model.addAttribute("categoryId", category.getId());
-		model.addAttribute("postList", recentPostsDTO);
+		model.addAttribute("postList", recentPostsDto);
 		model.addAttribute("viewName", "include/categoryPost");
 		return "template/layout";
 	}

@@ -42,7 +42,7 @@ public class SecurityConfig {
 						.requestMatchers("/WEB-INF/**", "/static/**").permitAll()
 						.requestMatchers("/", "/login", "/signup", "/category/**", "/board/**", "/search/**", "/api/*/public/**").permitAll()
 						.requestMatchers("/profile/**", "/api/*/auth/**").authenticated()
-						.requestMatchers("/api/*/member/**").hasAuthority("ROLE_USER")
+//						.requestMatchers("/api/*/member/**").hasAuthority("ROLE_USER")
 						.requestMatchers("/admin/**", "/api/*/admin/**").hasAuthority("ROLE_ADMIN")
 						.anyRequest().authenticated())
 				.csrf(AbstractHttpConfigurer::disable)
@@ -55,7 +55,7 @@ public class SecurityConfig {
 						.restSuccessHandler(restSuccessHandler)
 						.restFailureHandler(restFailureHandler)
 						.loginPage("/login")
-						.loginProcessingUrl("/api/user/public/login"));
+						.loginProcessingUrl("/api/account/public/login"));
 
 		return http.build();
 	}

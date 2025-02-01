@@ -4,7 +4,7 @@
 
 <div class="container">
 	<h2 class="text-center">로그인</h2>
-	<form id="loginForm" action="/api/user/login" method="post">
+	<form id="loginForm" action="/api/account/login" method="post">
 		<div class="form-group">
 			<label for="username">닉네임</label> <input type="text"
 				class="form-control" id="nickname" name="username"
@@ -37,7 +37,7 @@
 		
 		    $.ajax({
 		        type: "POST",
-		        url: "/api/user/public/login",
+		        url: "/api/account/public/login",
 		        contentType: "application/json",
 		        data: JSON.stringify({
 		            "nickname": nickname,

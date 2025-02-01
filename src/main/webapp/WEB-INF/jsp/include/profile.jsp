@@ -5,28 +5,28 @@
 
 <c:set var="isAdminViewingOtherProfile" value="false" />
 <sec:authorize access="hasRole('ROLE_ADMIN')">
-    <c:set var="isAdminViewingOtherProfile" value="${authentication.principal.id != profile.user.id}" />
+    <c:set var="isAdminViewingOtherProfile" value="${authentication.principal.id != profile.account.id}" />
 </sec:authorize>
 
 <div class="container mt-5">
     <div class="profile-header">
-        <h2 class="mt-3">${profile.user.nickname}</h2>
+        <h2 class="mt-3">${profile.account.nickname}</h2>
     </div>
     <div class="row">
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header">프로필 정보</div>
                 <div class="card-body">
-                    <p><strong>이름:</strong> ${profile.user.name}</p>
-                    <p><strong>가입 날짜:</strong> ${fn:substring(profile.user.createdAt.toString(), 0, 10)}</p>
-                    <p><strong>활동 상태:</strong> ${profile.user.status}</p>
+                    <p><strong>이름:</strong> ${profile.account.name}</p>
+                    <p><strong>가입 날짜:</strong> ${fn:substring(profile.account.createdAt.toString(), 0, 10)}</p>
+                    <p><strong>활동 상태:</strong> ${profile.account.status}</p>
                 </div>
             </div>
             <div class="card mb-4">
                 <div class="card-header">비밀번호 변경</div>
                 <div class="card-body">
                     <form id="updatePasswordForm">
-                        <sec:authorize access="authentication.principal.id == ${profile.user.id}">
+                        <sec:authorize access="authentication.principal.id == ${profile.account.id}">
                             <div class="form-group">
                                 <label for="beforePassword">현재 비밀번호</label>
                                 <input type="password" class="form-control" id="beforePassword" name="beforePassword" required>
@@ -46,7 +46,7 @@
                     </form>
                 </div>
             </div>
-            <c:if test="${profile.user.status != 'DELETED'}">
+            <c:if test="${profile.account.status != 'DELETED'}">
 	            <div class="card mb-4">
 	                <div class="card-header">탈퇴하기</div>
 	                <div class="card-body">
@@ -152,9 +152,9 @@
                 return;
             }
 
-            const url = "/api/user/auth/updatePassword";
+            const url = "/api/account/auth/updatePassword";
             const data = {
-                "id": ${profile.user.id},
+                "id": ${profile.account.id},
                 "beforePassword": beforePassword || null,
                 "afterPassword": afterPassword,
                 "afterPasswordCheck": afterPasswordCheck
@@ -168,7 +168,7 @@
                     alert("비밀번호가 성공적으로 변경되었습니다.");
                     if(${isAdminViewingOtherProfile} == false) {
                         $.ajax({
-                            url: "/user/auth/logout",
+                            url: "/account/auth/logout",
                             type: "POST"
                         });
                         location.href = "/login";
@@ -197,17 +197,17 @@
                 return;
             }
             const data = {
-                "id": ${profile.user.id},
+                "id": ${profile.account.id},
             	"password": $("#password").val() || null
             };
 
             $.ajax({
-                url: "/api/user/auth",
+                url: "/api/account/auth",
                 type: "DELETE",
                 data: data,
                 success: function(response) {
                     alert("계정이 성공적으로 탈퇴되었습니다.");
-                    location.href = isAdminViewingOtherProfile ? "/admin/user/manage" : "/";
+                    location.href = isAdminViewingOtherProfile ? "/admin/account/manage" : "/";
                 },
                 error: function(_, _, error) {
                     console.log(error);

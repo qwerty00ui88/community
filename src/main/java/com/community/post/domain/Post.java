@@ -1,4 +1,4 @@
-package com.community.comment.domain;
+package com.community.post.domain;
 
 import java.time.ZonedDateTime;
 
@@ -24,28 +24,33 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Builder(toBuilder = true)
-@Table(name = "comment")
+@Table(name = "post")
 @Entity
-public class CommentEntity {
+public class Post {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private int id;
 
-	@Column(name = "postId")
-	private int postId;
+	@Column(name = "categoryId")
+	private int categoryId;
 
-	@Column(name = "userId")
-	private int userId;
+	@Column(name = "accountId")
+	private int accountId;
 
-	@Column(name = "parentId")
-	private Integer parentId;
+	@Column(name = "title")
+	private String title;
 
+	@Column(name = "contents")
 	private String contents;
+
+	@Column(name = "views")
+	private int views;
 
 	@Builder.Default
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
-	private CommentStatus status = CommentStatus.DEFAULT;
+	private PostStatus status = PostStatus.DEFAULT;
 
 	@CreationTimestamp
 	@Column(name = "createdAt", updatable = false)

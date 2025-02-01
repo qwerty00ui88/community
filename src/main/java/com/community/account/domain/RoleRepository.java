@@ -1,4 +1,4 @@
-package com.community.user.domain;
+package com.community.account.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

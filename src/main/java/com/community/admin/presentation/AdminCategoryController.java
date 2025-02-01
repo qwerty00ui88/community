@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.community.category.application.CategoryService;
-import com.community.category.domain.CategoryEntity;
+import com.community.category.domain.Category;
 
 @Controller
 @RequestMapping("/admin/category")
@@ -18,10 +18,10 @@ public class AdminCategoryController {
 	@Autowired
 	private CategoryService categoryService;
 
-	// (관리자용) 카테고리 관리 페이지***
+	// (관리자용) 카테고리 관리 페이지
 	@GetMapping("/manage")
-	public String userManagement(Model model) {
-		List<CategoryEntity> categoryList = categoryService.getCategoryList();
+	public String accountManagement(Model model) {
+		List<Category> categoryList = categoryService.getCategoryList();
 		model.addAttribute("categoryList", categoryList);
 		model.addAttribute("viewName", "include/admin/categoryManage");
 		return "template/layout";

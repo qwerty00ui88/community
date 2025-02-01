@@ -2,9 +2,9 @@ package com.community.profile.application.dto;
 
 import java.util.List;
 
-import com.community.comment.domain.CommentEntity;
-import com.community.post.domain.PostEntity;
-import com.community.user.domain.UserEntity;
+import com.community.account.domain.Account;
+import com.community.comment.domain.Comment;
+import com.community.post.domain.Post;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,8 +19,8 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProfileDTO {
-	private UserEntity user;
-	private List<PostEntity> postList;
-	private List<CommentEntity> commentList;
+public class ProfileDto {
+	private Account account;
+	private List<Post> postList;
+	private List<Comment> commentList;
 }

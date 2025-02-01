@@ -12,20 +12,20 @@
 			            <div>환영합니다, <strong>${nickname}</strong>님!<br />즐거운 시간 되세요.</div>
 			        </div>
 				</div>
-				<form id="sidebar-logoutForm" action="/api/user/logout" method="post">
+				<form id="sidebar-logoutForm" action="/api/account/logout" method="post">
 					<button type="submit" class="btn btn-primary-custom btn-block">로그아웃</button>
 				</form>
 				<sec:authorize access="hasRole('ROLE_ADMIN')">
 					<hr>
 					<h4>관리자 메뉴</h4>
 					<ul class="list-group">
-						<li class="list-group-item"><a href="/admin/user/manage">사용자 관리</a></li>
+						<li class="list-group-item"><a href="/admin/account/manage">사용자 관리</a></li>
 						<li class="list-group-item"><a href="/admin/category/manage">카테고리 관리</a></li>
 					</ul>
 				</sec:authorize>
 			</sec:authorize>
 			<sec:authorize access="isAnonymous()">
-				<form id="loginForm" action="/api/user/login" method="post">
+				<form id="loginForm" action="/api/account/login" method="post">
 					<div class="form-group">
 						<label for="nickname">Nickname</label>
 						<input type="text" class="form-control" id="nickname" name="nickname" placeholder="Enter nickname" autocomplete="current-password">
@@ -45,7 +45,7 @@
 			<hr>
 			<h4>조회수 높은 게시글</h4>
 			<ul class="list-group">
-			    <c:forEach items="${homeDTO.mostViewedPosts}" var="post" varStatus="status">
+			    <c:forEach items="${homeDto.mostViewedPosts}" var="post" varStatus="status">
 			        <a href="/board/${post.id}" class="list-group-item d-flex justify-content-between align-items-center">
 			            <span class="rank-badge">${status.index + 1}</span>
 			            <span class="post-title">${post.title}</span>
@@ -62,7 +62,7 @@
     			<li class="category nav-link active" data-category="0">전체</li>
 
     			<!-- 카테고리 탭 반복문 -->
-    			<c:forEach var="category" items="${homeDTO.showOnHomeCategoryList}">
+    			<c:forEach var="category" items="${homeDto.showOnHomeCategoryList}">
         			<li class="category nav-link" data-category="${category.id}">${category.name}</li>
     			</c:forEach>
 			</ul>
@@ -88,7 +88,7 @@
 				</sec:authorize>
 			</div>
 			<ul class="list-group mt-3" id="post-list-all">
-				<c:forEach items="${homeDTO.recentPosts.postList}" var="post">
+				<c:forEach items="${homeDto.recentPosts.postList}" var="post">
 					<jsp:include page="../common/postItem.jsp">
 						<jsp:param name="post" value="${post}" />
 			        </jsp:include>
@@ -96,8 +96,8 @@
 			</ul>
 			<div id="pagination-container">
 			 	<jsp:include page="../common/pagination.jsp">
-				    <jsp:param name="totalPages" value="${homeDTO.recentPosts.pagination.totalPages}" />
-				    <jsp:param name="currentPage" value="${homeDTO.recentPosts.pagination.currentPage}" />
+				    <jsp:param name="totalPages" value="${homeDto.recentPosts.pagination.totalPages}" />
+				    <jsp:param name="currentPage" value="${homeDto.recentPosts.pagination.currentPage}" />
 				</jsp:include>
 			</div>
 		</div>
@@ -122,7 +122,7 @@
 		
 		    $.ajax({
 		        type: "POST",
-		        url: "/api/user/public/login",
+		        url: "/api/account/public/login",
 		        contentType: "application/json",
 		        data: JSON.stringify({
 		            "nickname": nickname,
@@ -151,7 +151,7 @@
 			e.preventDefault();
 			$.ajax({
 		        type: "POST",
-		        url: "/api/user/auth/logout",
+		        url: "/api/account/auth/logout",
 		        contentType: "application/json",
 		        success: function (response) {
 		            if (response.code === "SUCCESS") {

@@ -15,9 +15,9 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.StringUtils;
 
+import com.community.account.application.dto.AccountDto;
 import com.community.common.util.WebUtil;
 import com.community.config.security.token.RestAuthenticationToken;
-import com.community.user.application.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +27,7 @@ public class RestAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	public RestAuthenticationFilter() {
-		super(new AntPathRequestMatcher("/api/user/public/login", "POST"));
+		super(new AntPathRequestMatcher("/api/account/public/login", "POST"));
 	}
 
 	public SecurityContextRepository getSecurityContextRepository(HttpSecurity http) {
@@ -45,11 +45,11 @@ public class RestAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		if (!HttpMethod.POST.name().equals(request.getMethod()) || !WebUtil.isAjax(request)) {
 			throw new IllegalArgumentException("Authentication method not supported");
 		}
-		UserDTO userDto = objectMapper.readValue(request.getReader(), UserDTO.class);
-		if (!StringUtils.hasText(userDto.getNickname()) || !StringUtils.hasText(userDto.getPassword())) {
+		AccountDto accountDto = objectMapper.readValue(request.getReader(), AccountDto.class);
+		if (!StringUtils.hasText(accountDto.getNickname()) || !StringUtils.hasText(accountDto.getPassword())) {
 			throw new AuthenticationServiceException("Nickname or Password not provided");
 		}
-		RestAuthenticationToken token = new RestAuthenticationToken(userDto.getNickname(), userDto.getPassword());
+		RestAuthenticationToken token = new RestAuthenticationToken(accountDto.getNickname(), accountDto.getPassword());
 		return this.getAuthenticationManager().authenticate(token);
 	}
 

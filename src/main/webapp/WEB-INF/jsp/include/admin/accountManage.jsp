@@ -15,17 +15,17 @@
                 </tr>
             </thead>
             <tbody>
-                <c:forEach var="user" items="${userList}">
+                <c:forEach var="account" items="${accountList}">
                     <tr>
-                        <td>${user.id}</td>
-                        <td>${user.name}</td>
-                        <td>${user.nickname}</td>
+                        <td>${account.id}</td>
+                        <td>${account.name}</td>
+                        <td>${account.nickname}</td>
                         <td>
 						    <div class="input-group">
-						        <select class="form-control status-select" data-user-id="${user.id}">
-						            <option value="ACTIVE" ${user.status == 'ACTIVE' ? 'selected' : ''}>ACTIVE</option>
-						            <option value="INACTIVE" ${user.status == 'INACTIVE' ? 'selected' : ''}>INACTIVE</option>
-						            <option value="DELETED" ${user.status == 'DELETED' ? 'selected' : ''}>DELETED</option>
+						        <select class="form-control status-select" data-account-id="${account.id}">
+						            <option value="ACTIVE" ${account.status == 'ACTIVE' ? 'selected' : ''}>ACTIVE</option>
+						            <option value="INACTIVE" ${account.status == 'INACTIVE' ? 'selected' : ''}>INACTIVE</option>
+						            <option value="DELETED" ${account.status == 'DELETED' ? 'selected' : ''}>DELETED</option>
 						        </select>
 						        <div class="input-group-append">
 						            <button class="btn btn-primary update-status-btn" type="button">저장</button>
@@ -33,7 +33,7 @@
 						    </div>
 						</td>
                         <td>
-                            <a href="/profile/${user.id}" class="btn btn-sm btn-primary-custom">프로필 보기</a>
+                            <a href="/profile/${account.id}" class="btn btn-sm btn-primary-custom">프로필 보기</a>
                         </td>
                     </tr>
                 </c:forEach>
@@ -46,14 +46,14 @@
 $(document).ready(function() {
  	// 사용자 상태 변경
     $('.update-status-btn').on('click', function() {
-        const userId = $(this).closest('.input-group').find('.status-select').data('user-id');
+        const accountId = $(this).closest('.input-group').find('.status-select').data('account-id');
         const selectedStatus = $(this).closest('.input-group').find('.status-select').val().trim();
 
         $.ajax({
-            url: '/api/user/admin/updateUserStatus',
+            url: '/api/account/admin/updateAccountStatus',
             type: 'Patch',
             data: {
-            	id: userId, 
+            	id: accountId, 
             	status: selectedStatus 
             },
             success: function(response) {

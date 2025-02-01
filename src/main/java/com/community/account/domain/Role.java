@@ -1,8 +1,12 @@
-package com.community.user.domain;
+package com.community.account.domain;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,18 +32,26 @@ import lombok.Setter;
 public class Role implements Serializable {
 	@Id
 	@GeneratedValue
-	@Column(name = "role_id")
+	@Column(name = "id")
 	private Long id;
 
-	@Column(name = "role_name")
+	@Column(name = "roleName")
 	private String roleName;
 
-	@Column(name = "role_desc")
+	@Column(name = "roleDesc")
 	private String roleDesc;
 
-	@Column(name = "is_expression")
+	@Column(name = "isExpression")
 	private String isExpression;
 
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "userRoles", cascade = CascadeType.ALL)
-	private Set<UserEntity> accounts = new HashSet<>();
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "accountRoles", cascade = CascadeType.ALL)
+	private Set<Account> accounts = new HashSet<>();
+
+	@CreationTimestamp
+	@Column(name = "createdAt", updatable = false)
+	private ZonedDateTime createdAt;
+
+	@UpdateTimestamp
+	@Column(name = "updatedAt")
+	private ZonedDateTime updatedAt;
 }

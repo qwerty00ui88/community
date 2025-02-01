@@ -5,15 +5,15 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CategoryRepository extends JpaRepository<CategoryEntity, Integer> {
+public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
-	public List<CategoryEntity> findByStatus(CategoryStatus status);
+	public List<Category> findByStatus(CategoryStatus status);
 
-	public List<CategoryEntity> findByStatusAndShowOnHome(CategoryStatus status, boolean showOnHome);
+	public List<Category> findByStatusAndShowOnHome(CategoryStatus status, boolean showOnHome);
 
-	public List<CategoryEntity> findByStatusNot(CategoryStatus status);
-	
-	public Optional<CategoryEntity> findByIdAndStatusNot(int id, CategoryStatus status);
+	public List<Category> findByStatusNot(CategoryStatus status);
 
-	public Optional<CategoryEntity> findByIdAndStatus(int id,  CategoryStatus status);
+	public Optional<Category> findByIdAndStatusNot(int id, CategoryStatus status);
+
+	public Optional<Category> findByIdAndStatus(int id, CategoryStatus status);
 }

@@ -6,34 +6,34 @@
 
 <div class="container view-post-container">
 	<!-- 게시글 -->
-    <h2 class="post-title">${boardDTO.post.title}</h2>
+    <h2 class="post-title">${boardDto.post.title}</h2>
     <div class="post-meta text-muted mb-4">
         <span>작성자: 
 	        <c:choose>
-		        <c:when test="${boardDTO.writer.status == 'DELETED'}">
+		        <c:when test="${boardDto.writer.status == 'DELETED'}">
 		            <strong>탈퇴회원</strong>
 		        </c:when>
 		        <c:otherwise>
-		            <strong>${boardDTO.writer.nickname}</strong>
+		            <strong>${boardDto.writer.nickname}</strong>
 		        </c:otherwise>
 		    </c:choose>
         </span> | 
-        <span>작성일: <strong>${fn:substring(boardDTO.post.createdAt.toString(), 0, 10)}</strong></span>
-        <c:if test="${boardDTO.post.status == 'EDITED'}">
+        <span>작성일: <strong>${fn:substring(boardDto.post.createdAt.toString(), 0, 10)}</strong></span>
+        <c:if test="${boardDto.post.status == 'EDITED'}">
             <span class="text-muted">(edited)</span>
         </c:if>
-        | <span>조회수: <strong>${boardDTO.post.views}</strong></span>
+        | <span>조회수: <strong>${boardDto.post.views}</strong></span>
     </div>
     
     <!-- 게시글 수정 및 삭제 버튼 -->
     <div class="text-right mb-4">
-    	<sec:authorize access="authentication.principal != null and authentication.principal != 'anonymousUser' and authentication.principal.id == ${boardDTO.post.userId} or hasRole('ROLE_ADMIN')">
+    	<sec:authorize access="authentication.principal != null and authentication.principal != 'anonymousUser' and authentication.principal.id == ${boardDto.post.accountId} or hasRole('ROLE_ADMIN')">
 	        <button id="updatePostBtn" class="btn btn-outline-primary mr-2">게시글 수정</button>
 	        <button id="deletePostBtn" class="btn btn-outline-danger">게시글 삭제</button>
 	    </sec:authorize>
 	</div>
     <div class="post-content">
-		<c:forEach var="item" items="${boardDTO.fileList}">
+		<c:forEach var="item" items="${boardDto.fileList}">
 		    <c:choose>
 		    	<c:when test="${fn:contains(item.metadata, 'image/')}">
 		            <img src="${item.url}" alt="Image" style="max-width: 100%; height: auto;">
@@ -43,14 +43,14 @@
 		        </c:otherwise>
 			</c:choose>
 		</c:forEach>
-        <p>${boardDTO.post.contents}</p>
+        <p>${boardDto.post.contents}</p>
     </div>
     <hr>
     
     <!-- 댓글 및 대댓글 -->
     <div class="comments">
         <h5>댓글</h5>
-        <c:forEach items="${boardDTO.commentList}" var="comment">
+        <c:forEach items="${boardDto.commentList}" var="comment">
             <div class="comment mb-3" data-comment-id="${comment.id}">
                 <div class="comment-meta text-muted">
                     <span>
@@ -164,7 +164,7 @@
 
 <script>
 $(document).ready(function() {	
-    const postId = ${boardDTO.post.id};
+    const postId = ${boardDto.post.id};
     const isAdmin = ${LOGIN_ADMIN_ID != null};    
     
     // 게시글 수정

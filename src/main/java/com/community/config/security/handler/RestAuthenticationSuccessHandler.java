@@ -7,8 +7,8 @@ import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.community.account.application.dto.AccountDto;
 import com.community.common.presentation.dto.CommonResponse;
-import com.community.user.application.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -26,13 +26,13 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
 		mapper.registerModule(new JavaTimeModule());
 		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		response.setContentType("application/json;charset=UTF-8");
-		
-		UserDTO userDto = (UserDTO) authentication.getPrincipal();
-		userDto.setPassword(null);
-		CommonResponse<UserDTO> commonResponse = CommonResponse.success("인증 성공", userDto);
-		
+
+		AccountDto accountDto = (AccountDto) authentication.getPrincipal();
+		accountDto.setPassword(null);
+		CommonResponse<AccountDto> commonResponse = CommonResponse.success("인증 성공", accountDto);
+
 		mapper.writeValue(response.getWriter(), commonResponse);
-		request.getSession().setAttribute("nickname", userDto.getNickname());
+		request.getSession().setAttribute("nickname", accountDto.getNickname());
 		clearAuthenticationAttributes(request);
 	}
 

@@ -26,10 +26,11 @@ import lombok.ToString;
 @Builder(toBuilder = true)
 @Table(name = "category")
 @Entity
-public class CategoryEntity {
+public class Category {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@Column(name = "id")
+	private int id;
 
 	private String name;
 

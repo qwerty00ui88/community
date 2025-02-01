@@ -12,31 +12,31 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.community.user.application.dto.AccountContext;
-import com.community.user.application.dto.UserDTO;
-import com.community.user.domain.Role;
-import com.community.user.domain.UserEntity;
-import com.community.user.domain.UserRepository;
+import com.community.account.application.dto.AccountContext;
+import com.community.account.application.dto.AccountDto;
+import com.community.account.domain.Account;
+import com.community.account.domain.AccountRepository;
+import com.community.account.domain.Role;
 
 import lombok.RequiredArgsConstructor;
 
 @Service("userDetailsService")
 @RequiredArgsConstructor
-public class FormUserDetailsService implements UserDetailsService {
+public class RestUserDetailsService implements UserDetailsService {
 
-	private final UserRepository userRepository;
+	private final AccountRepository accountRepository;
 
 	@Override
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		UserEntity account = userRepository.findByNickname(username);
+		Account account = accountRepository.findByNickname(username);
 		if (account == null) {
 			throw new UsernameNotFoundException("No user found with username: " + username);
 		}
-		List<GrantedAuthority> authorities = account.getUserRoles().stream().map(Role::getRoleName)
+		List<GrantedAuthority> authorities = account.getAccountRoles().stream().map(Role::getRoleName)
 				.collect(Collectors.toSet()).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 		ModelMapper mapper = new ModelMapper();
-		UserDTO accountDto = mapper.map(account, UserDTO.class);
+		AccountDto accountDto = mapper.map(account, AccountDto.class);
 		return new AccountContext(accountDto, authorities);
 	}
 }
