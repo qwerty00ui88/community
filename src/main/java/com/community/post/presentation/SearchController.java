@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.community.common.application.PaginationService;
 import com.community.post.application.PostService;
-import com.community.post.application.dto.RecentPostsDTO;
-import com.community.post.domain.PostEntity;
+import com.community.post.application.dto.RecentPostsDto;
+import com.community.post.domain.Post;
 
 @Controller
 @RequestMapping("/search")
@@ -31,12 +31,12 @@ public class SearchController {
 			@RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "size", defaultValue = "10") int size, Model model) {
 		Pageable pageable = PageRequest.of(page, size);
-		Page<PostEntity> postPage = postService.getPostListByKeyword(field, keyword, pageable);
-		RecentPostsDTO recentPostsDTO = new RecentPostsDTO(postPage.getContent(),
+		Page<Post> postPage = postService.getPostListByKeyword(field, keyword, pageable);
+		RecentPostsDto recentPostsDto = new RecentPostsDto(postPage.getContent(),
 				paginationService.getPaginationDetails(postPage));
 		model.addAttribute("title", "검색 결과: " + keyword);
 		model.addAttribute("categoryId", '0');
-		model.addAttribute("postList", recentPostsDTO);
+		model.addAttribute("postList", recentPostsDto);
 		model.addAttribute("viewName", "include/categoryPost");
 
 		return "template/layout";

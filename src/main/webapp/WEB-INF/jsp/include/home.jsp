@@ -1,43 +1,42 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <div class="row">
 	<aside class="col-md-4">
 		<div class="sidebar">
-			<c:choose>
-				<c:when test="${not empty LOGIN_USER_ID || not empty LOGIN_ADMIN_ID}">
+			<sec:authorize access="isAuthenticated()">
+				<div class="form-group">
+					<div class="welcome-message">
+           				<label>Welcome!</label>
+			            <div>환영합니다, <strong>${nickname}</strong>님!<br />즐거운 시간 되세요.</div>
+			        </div>
+				</div>
+				<form id="sidebar-logoutForm" action="/api/account/logout" method="post">
+					<button type="submit" class="btn btn-primary-custom btn-block">로그아웃</button>
+				</form>
+				<sec:authorize access="hasRole('ROLE_ADMIN')">
+					<hr>
+					<h4>관리자 메뉴</h4>
+					<ul class="list-group">
+						<li class="list-group-item"><a href="/admin/account/manage">사용자 관리</a></li>
+						<li class="list-group-item"><a href="/admin/category/manage">카테고리 관리</a></li>
+					</ul>
+				</sec:authorize>
+			</sec:authorize>
+			<sec:authorize access="isAnonymous()">
+				<form id="loginForm" action="/api/account/login" method="post">
 					<div class="form-group">
-						<div class="welcome-message">
-            				<label>Welcome!</label>
-				            <div>환영합니다, <strong>${nickname}</strong>님!<br />즐거운 시간 되세요.</div>
-				        </div>
+						<label for="nickname">Nickname</label>
+						<input type="text" class="form-control" id="nickname" name="nickname" placeholder="Enter nickname" autocomplete="current-password">
 					</div>
-					<form id="sidebar-logoutForm" action="/api/user/logout" method="post">
-						<button type="submit" class="btn btn-primary-custom btn-block">로그아웃</button>
-					</form>
-					<c:if test="${not empty LOGIN_ADMIN_ID}">
-						<hr>
-						<h4>관리자 메뉴</h4>
-						<ul class="list-group">
-							<li class="list-group-item"><a href="/admin/user/manage">사용자 관리</a></li>
-							<li class="list-group-item"><a href="/admin/category/manage">카테고리 관리</a></li>
-						</ul>
-					</c:if>
-				</c:when>
-				<c:otherwise>
-					<form id="loginForm" action="/api/user/login" method="post">
-						<div class="form-group">
-							<label for="nickname">Nickname</label>
-							<input type="text" class="form-control" id="nickname" name="nickname" placeholder="Enter nickname" autocomplete="current-password">
-						</div>
-						<div class="form-group">
-							<label for="password">Password</label>
-							<input type="password" class="form-control" id="password" name="password" placeholder="Enter password" autocomplete="current-password">
-						</div>
-						<button type="submit" class="btn btn-primary-custom btn-block">로그인</button>
-					</form>
-				</c:otherwise>
-			</c:choose>
+					<div class="form-group">
+						<label for="password">Password</label>
+						<input type="password" class="form-control" id="password" name="password" placeholder="Enter password" autocomplete="current-password">
+					</div>
+					<button type="submit" class="btn btn-primary-custom btn-block">로그인</button>
+				</form>
+			</sec:authorize>
 			<hr>
             <h4>사이트 메뉴</h4>
             <ul class="list-group">
@@ -46,7 +45,7 @@
 			<hr>
 			<h4>조회수 높은 게시글</h4>
 			<ul class="list-group">
-			    <c:forEach items="${homeDTO.mostViewedPosts}" var="post" varStatus="status">
+			    <c:forEach items="${homeDto.mostViewedPosts}" var="post" varStatus="status">
 			        <a href="/board/${post.id}" class="list-group-item d-flex justify-content-between align-items-center">
 			            <span class="rank-badge">${status.index + 1}</span>
 			            <span class="post-title">${post.title}</span>
@@ -63,7 +62,7 @@
     			<li class="category nav-link active" data-category="0">전체</li>
 
     			<!-- 카테고리 탭 반복문 -->
-    			<c:forEach var="category" items="${homeDTO.showOnHomeCategoryList}">
+    			<c:forEach var="category" items="${homeDto.showOnHomeCategoryList}">
         			<li class="category nav-link" data-category="${category.id}">${category.name}</li>
     			</c:forEach>
 			</ul>
@@ -84,12 +83,12 @@
 			</div>
 			<div class="d-flex justify-content-between align-items-center mt-3">
 				<h4>글 목록</h4>
-				<c:if test="${not empty LOGIN_USER_ID || not empty LOGIN_ADMIN_ID}">
+				<sec:authorize access="isAuthenticated()">
 					<a href="/board/create" class="btn btn-primary">글쓰기</a>
-				</c:if>
+				</sec:authorize>
 			</div>
 			<ul class="list-group mt-3" id="post-list-all">
-				<c:forEach items="${homeDTO.recentPosts.postList}" var="post">
+				<c:forEach items="${homeDto.recentPosts.postList}" var="post">
 					<jsp:include page="../common/postItem.jsp">
 						<jsp:param name="post" value="${post}" />
 			        </jsp:include>
@@ -97,8 +96,8 @@
 			</ul>
 			<div id="pagination-container">
 			 	<jsp:include page="../common/pagination.jsp">
-				    <jsp:param name="totalPages" value="${homeDTO.recentPosts.pagination.totalPages}" />
-				    <jsp:param name="currentPage" value="${homeDTO.recentPosts.pagination.currentPage}" />
+				    <jsp:param name="totalPages" value="${homeDto.recentPosts.pagination.totalPages}" />
+				    <jsp:param name="currentPage" value="${homeDto.recentPosts.pagination.currentPage}" />
 				</jsp:include>
 			</div>
 		</div>
@@ -110,34 +109,65 @@
 		let categoryId = '0';
 		
 		// 로그인
-		$("#loginForm").on("submit", function(e) {
-			e.preventDefault();
-			let nickname = $("#nickname").val().trim();
-			let password = $("#password").val();
-			$.post("/api/user/login", {
-				"nickname": nickname,
-				"password": password
-			}).done(function(response) {
-				if (response.code === "SUCCESS") {
-					location.href = "/";
-				} else {
-					alert("로그인에 실패했습니다. 닉네임과 비밀번호를 확인하세요.");
-				}
-			}).fail(function(_, _, error) {
-				console.log(error);
-				alert("로그인 중 오류가 발생했습니다.");
-			}).always(function() {
-				$("#nickname").val("");
-				$("#password").val("");
-			});
+		$("#loginForm").on("submit", function (e) {
+		    e.preventDefault();
+		
+		    let nickname = $("#nickname").val().trim();
+		    let password = $("#password").val();
+		
+		    if (!nickname || !password) {
+		        alert("닉네임과 비밀번호를 입력하세요.");
+		        return;
+		    }
+		
+		    $.ajax({
+		        type: "POST",
+		        url: "/api/account/public/login",
+		        contentType: "application/json",
+		        data: JSON.stringify({
+		            "nickname": nickname,
+		            "password": password,
+		        }),
+		        success: function (response) {
+		            if (response.code === "SUCCESS") {
+		                location.href = "/";
+		            } else {
+		                alert("로그인에 실패했습니다. 닉네임과 비밀번호를 확인하세요.");
+		            }
+		        },
+		        error: function (jqXHR, textStatus, errorThrown) {
+		            console.error("Error:", textStatus, errorThrown);
+		            alert("로그인 중 오류가 발생했습니다. 다시 시도하세요.");
+		        },
+		        complete: function () {
+		            $("#nickname").val("");
+		            $("#password").val("");
+		        },
+		    });
 		});
 	
-		// 로그아웃
+		// 로그아웃		
 		$("#sidebar-logoutForm").on("submit", function(e) {
 			e.preventDefault();
-			$.post("/api/user/logout").always(function() {
-				location.reload();
-			});
+			$.ajax({
+		        type: "POST",
+		        url: "/api/account/auth/logout",
+		        contentType: "application/json",
+		        success: function (response) {
+		            if (response.code === "SUCCESS") {
+		                location.href = "/";
+		            } else {
+		                alert("로그아웃에 실패했습니다.");
+		            }
+		        },
+		        error: function (jqXHR, textStatus, errorThrown) {
+		            console.error("Error:", textStatus, errorThrown);
+		            alert("로그아웃 중 오류가 발생했습니다. 다시 시도하세요.");
+		        },
+		        complete: function () {
+		        	location.href = "/";
+		        },
+		    });
 		});
 		
 		// 페이지네이션
@@ -171,7 +201,7 @@
 	    
 	    });
 
-	    
+		
 	    
 	    // *** 함수 ***
 	 	// 게시글 검색 함수
@@ -189,7 +219,7 @@
 	 	// 게시글 데이터 로드 콜백 함수
 	    function loadData(params) {
 	        return $.ajax({
-	            url: '/api/post',
+	            url: '/api/post/public',
 	            type: 'GET',
 	            data: {...params, categoryId: categoryId}
 	        });

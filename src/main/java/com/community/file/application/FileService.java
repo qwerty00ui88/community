@@ -13,8 +13,8 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.community.file.application.dto.MetadataDTO;
-import com.community.file.domain.FileEntity;
+import com.community.file.application.dto.MetadataDto;
+import com.community.file.domain.File;
 import com.community.file.domain.FileRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -57,8 +57,8 @@ public class FileService {
 		String fileUrl = amazonS3.getUrl(bucketName, fileName).toString();
 
 		// 파일 메타데이터 저장
-		FileEntity fileEntity = FileEntity.builder().url(fileUrl).domain(domain).domainId(domainId)
-				.type(file.getContentType()).size(file.getSize()).metadata(createFileMetadata(file)).build();
+		File fileEntity = File.builder().url(fileUrl).domain(domain).domainId(domainId).type(file.getContentType())
+				.size(file.getSize()).metadata(createFileMetadata(file)).build();
 		fileRepository.save(fileEntity);
 
 		return fileUrl;
@@ -72,22 +72,18 @@ public class FileService {
 		return fileUrls;
 	}
 
-	public List<FileEntity> getFilesByDomainAndDomainId(String domain, Integer domainId) {
+	public List<File> getFilesByDomainAndDomainId(String domain, Integer domainId) {
 		return fileRepository.findByDomainAndDomainId(domain, domainId);
 	}
 
 	public void deleteFile(Integer fileId) {
-		FileEntity fileEntity = fileRepository.findById(fileId)
+		File savedFile = fileRepository.findById(fileId)
 				.orElseThrow(() -> new EntityNotFoundException("파일을 찾을 수 없습니다. ID: " + fileId));
-
-		// S3에서 파일 삭제
-		String fileKey = fileEntity.getUrl().substring(fileEntity.getUrl().indexOf(".com/") + 5);
+		String fileKey = savedFile.getUrl().substring(savedFile.getUrl().indexOf(".com/") + 5);
 		amazonS3.deleteObject(bucketName, fileKey);
-
-		// 데이터베이스에서 파일 정보 삭제
-		fileRepository.delete(fileEntity);
+		fileRepository.delete(savedFile);
 	}
-	
+
 	public void deleteFiles(Integer[] fileIdList) {
 		for (Integer fileId : fileIdList) {
 			deleteFile(fileId);
@@ -96,10 +92,9 @@ public class FileService {
 
 	private String createFileMetadata(MultipartFile file) {
 		try {
-			MetadataDTO metadata = new MetadataDTO();
+			MetadataDto metadata = new MetadataDto();
 			metadata.setContentType(file.getContentType());
 			metadata.setOriginalFilename(file.getOriginalFilename());
-
 			ObjectMapper objectMapper = new ObjectMapper();
 			return objectMapper.writeValueAsString(metadata);
 		} catch (Exception e) {

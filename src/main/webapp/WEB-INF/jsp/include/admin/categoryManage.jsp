@@ -200,7 +200,6 @@ $(document).ready(function() {
             $.ajax({
                 url: "/api/category/admin/" + categoryId,
                 type: "DELETE",
-                data: { categoryId: categoryId },
                 success: function(response) {
                     alert("카테고리가 성공적으로 삭제되었습니다.");
                     location.reload();

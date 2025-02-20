@@ -4,7 +4,7 @@
 
 <div class="container">
 	<h2 class="text-center">로그인</h2>
-	<form id="loginForm" action="/api/user/login" method="post">
+	<form id="loginForm" action="/api/account/login" method="post">
 		<div class="form-group">
 			<label for="username">닉네임</label> <input type="text"
 				class="form-control" id="nickname" name="username"
@@ -27,25 +27,38 @@
 		$("#loginForm").on("submit", function(e) {
 			e.preventDefault();
 
-			const nickname = $("#nickname").val();
-			const password = $("#password").val();
-
-			$.post("/api/user/login", {
-				"nickname" : nickname,
-				"password" : password
-			}).done(function(response) {
-				if (response.code === "SUCCESS") {
-					window.location.href = "/";
-				} else {
-					alert("로그인에 실패했습니다. 닉네임과 비밀번호를 확인하세요.");
-				}
-			}).fail(function(_, _, error) {
-				console.log(error);
-				alert("로그인 중 오류가 발생했습니다.");
-			}).always(function() {
-				$("#nickname").val("");
-				$("#password").val("");
-			});
+			let nickname = $("#nickname").val().trim();
+		    let password = $("#password").val();
+		
+		    if (!nickname || !password) {
+		        alert("닉네임과 비밀번호를 입력하세요.");
+		        return;
+		    }
+		
+		    $.ajax({
+		        type: "POST",
+		        url: "/api/account/public/login",
+		        contentType: "application/json",
+		        data: JSON.stringify({
+		            "nickname": nickname,
+		            "password": password,
+		        }),
+		        success: function (response) {
+		            if (response.code === "SUCCESS") {
+		                location.href = "/";
+		            } else {
+		                alert("로그인에 실패했습니다. 닉네임과 비밀번호를 확인하세요.");
+		            }
+		        },
+		        error: function (jqXHR, textStatus, errorThrown) {
+		            console.error("Error:", textStatus, errorThrown);
+		            alert("로그인 중 오류가 발생했습니다. 다시 시도하세요.");
+		        },
+		        complete: function () {
+		            $("#nickname").val("");
+		            $("#password").val("");
+		        },
+		    });
 		})
 	})
 </script>

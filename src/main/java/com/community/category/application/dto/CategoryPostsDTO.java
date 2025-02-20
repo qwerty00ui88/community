@@ -2,7 +2,7 @@ package com.community.category.application.dto;
 
 import java.util.List;
 
-import com.community.post.domain.PostEntity;
+import com.community.post.application.dto.PostDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +17,8 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryPostsDTO {
+public class CategoryPostsDto {
 	private Integer categoryId;
 	private String categoryName;
-	private List<PostEntity> postList;
+	private List<PostDto> postList;
 }

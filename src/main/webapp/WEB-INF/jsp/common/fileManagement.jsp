@@ -72,7 +72,6 @@ $(document).ready(function () {
             const fileId = parseInt(event.target.getAttribute("data-file-id"), 10);
             removedFilesArray.push(fileId);
             event.target.parentElement.remove();
-            console.log("삭제된 기존 파일 ID:", removedFilesArray);
         }
 
         // 새 파일 삭제 처리
@@ -80,7 +79,6 @@ $(document).ready(function () {
             const index = parseInt(event.target.getAttribute("data-index"), 10);
             newFilesArray.splice(index, 1);
             event.target.parentElement.remove();
-            console.log("남아있는 새 파일:", newFilesArray);
         }
     });
 });

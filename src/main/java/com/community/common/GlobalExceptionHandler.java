@@ -1,11 +1,16 @@
 package com.community.common;
 
+import javax.security.auth.login.AccountNotFoundException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.community.account.PasswordMismatchException;
+import com.community.account.UnauthorizedException;
+import com.community.account.UserAlreadyExistsException;
 import com.community.category.CategoryNotFoundException;
 import com.community.category.InvalidCategoryException;
 import com.community.comment.CommentNotFoundException;
@@ -13,10 +18,6 @@ import com.community.comment.InvalidCommentException;
 import com.community.common.presentation.dto.CommonResponse;
 import com.community.post.InvalidPostException;
 import com.community.post.PostNotFoundException;
-import com.community.user.PasswordMismatchException;
-import com.community.user.UnauthorizedException;
-import com.community.user.UserAlreadyExistsException;
-import com.community.user.UserNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -24,7 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class GlobalExceptionHandler {
 
 	// 에러 페이지 반환
-	@ExceptionHandler({ UserNotFoundException.class, PostNotFoundException.class, CommentNotFoundException.class,
+	@ExceptionHandler({ AccountNotFoundException.class, PostNotFoundException.class, CommentNotFoundException.class,
 			CategoryNotFoundException.class })
 	public ModelAndView handleNotFoundException(RuntimeException ex, HttpServletRequest request) {
 		request.setAttribute("status", HttpStatus.NOT_FOUND.value());

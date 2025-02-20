@@ -11,18 +11,18 @@ import lombok.ToString;
 @Setter
 @ToString
 @AllArgsConstructor
-public class PaginationDTO {
+public class PaginationDto {
 	private int currentPage;
 	private int totalPages;
 	private int startPage;
 	private int endPage;
 	private int pageSize;
-	
-    public PaginationDTO(int currentPage, int totalPages, int pageSize) {
-        this.currentPage = currentPage;
-        this.totalPages = totalPages;
-        this.pageSize = pageSize;
-        this.startPage = Math.max(0, currentPage - 2);
-        this.endPage = Math.min(totalPages - 1, currentPage + 2);
-    }
+
+	public PaginationDto(int currentPage, int totalPages, int pageSize) {
+		this.currentPage = currentPage;
+		this.totalPages = totalPages;
+		this.pageSize = pageSize;
+		this.startPage = Math.max(0, currentPage - 2);
+		this.endPage = Math.min(totalPages - 1, currentPage + 2);
+	}
 }

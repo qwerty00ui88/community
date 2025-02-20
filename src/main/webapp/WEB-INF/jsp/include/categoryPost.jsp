@@ -36,7 +36,7 @@ $(document).ready(function() {
  	// 게시글 데이터 로드 콜백 함수
     function loadData(params) {
         return $.ajax({
-            url: ${categoryId} == '0' ? 'api/post/search' : 'api/post',
+            url: ${categoryId} == '0' ? 'api/post/public/search' : 'api/post/public',
             type: 'GET',
             data: ${categoryId} == '0' ? {...params, field : "<%= field %>", keyword : "<%= keyword %>"} : {...params, categoryId: categoryId}
         });

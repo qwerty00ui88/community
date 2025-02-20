@@ -2,9 +2,9 @@ package com.community.home.application.dto;
 
 import java.util.List;
 
-import com.community.category.domain.CategoryEntity;
-import com.community.post.application.dto.RecentPostsDTO;
-import com.community.post.domain.PostEntity;
+import com.community.category.domain.Category;
+import com.community.post.application.dto.RecentPostsDto;
+import com.community.post.domain.Post;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,15 +19,10 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class HomeDTO {	
-	// 홈 활성화 카테고리
-	private List<CategoryEntity> showOnHomeCategoryList;
-    
-    // 최신 + 페이징
-    private RecentPostsDTO recentPosts;
-    
-    // 조회수 순으로 정렬된 게시물
-    private List<PostEntity> mostViewedPosts;
+public class HomeDto {
+	private List<Category> showOnHomeCategoryList;
+
+	private RecentPostsDto recentPosts;
+
+	private List<Post> mostViewedPosts;
 }
-
-

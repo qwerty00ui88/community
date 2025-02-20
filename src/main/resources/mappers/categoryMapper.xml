@@ -9,18 +9,18 @@
 		    c.id as categoryId, 
 		    c.name as categoryName, 
 		    p.id as postId, 
-		    p.userId, 
+		    p.accountId, 
 		    p.title, 
 		    p.contents, 
 		    p.views, 
 		    p.status,
-		    p.createdAt, 
+		    p.createdAt,
 		    p.updatedAt
 		FROM category c
 		LEFT JOIN (
 		    SELECT 
 		        id, 
-		        userId, 
+		        accountId, 
 		        categoryId, 
 		        title, 
 		        contents, 
@@ -35,7 +35,7 @@
 		WHERE 
 		    1=1
 		    <if test="showOnHome != null">
-		        AND c.showOnHome = #{showOnHome}
+		        AND c.show_on_home = #{showOnHome}
 		    </if>
 		    <if test="status != null">
 		        AND c.status = #{status}
@@ -46,12 +46,12 @@
 		ORDER BY c.id, p.createdAt DESC
     </select>
     
-    <resultMap id="CategoryPostsResultMap" type="com.community.category.application.dto.CategoryPostsDTO">
+    <resultMap id="CategoryPostsResultMap" type="com.community.category.application.dto.CategoryPostsDto">
         <result property="categoryId" column="categoryId" />
         <result property="categoryName" column="categoryName" />
-        <collection property="postList" ofType="com.community.post.domain.PostEntity">
+        <collection property="postList" ofType="com.community.post.application.dto.PostDto">
             <result property="id" column="postId" />
-            <result property="userId" column="userId" />
+            <result property="accountId" column="accountId" />
             <result property="title" column="title" />
             <result property="contents" column="contents" />
             <result property="views" column="views" />

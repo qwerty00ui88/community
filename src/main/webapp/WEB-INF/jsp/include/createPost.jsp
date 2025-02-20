@@ -44,7 +44,7 @@
 	        });
 
 	        $.ajax({
-	            url: "/api/post",
+	            url: "/api/post/auth",
 	            type: "POST",
 	            data: formData,
 	            processData: false,

@@ -2,41 +2,41 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.community.comment.infra.CommentMapper">
-    <select id="selectCommentListWithRepliesByPostId" resultMap="CommentResultMap">
+   <select id="selectCommentListWithRepliesByPostId" resultMap="CommentResultMap">
         SELECT
             c1.id,
             c1.postId,
-            c1.userId,
+            c1.accountId,
             c1.parentId,
             c1.contents,
             c1.status,
             c1.createdAt,
             c1.updatedAt,
-            u.nickname AS writerNickname,
+            a1.nickname AS writerNickname,
             c2.id AS replyId,
             c2.postId AS replyPostId,
-            c2.userId AS replyUserId,
+            c2.accountId AS replyAccountId,
             c2.parentId AS replyParentId,
             c2.contents AS replyContents,
             c2.status AS replyStatus,
             c2.createdAt AS replyCreatedAt,
             c2.updatedAt AS replyUpdatedAt,
-            u2.nickname AS replyWriterNickname
+            a2.nickname AS replyWriterNickname
         FROM comment c1
             LEFT JOIN comment c2 ON c1.id = c2.parentId
-            LEFT JOIN user u ON c1.userId = u.id
-            LEFT JOIN user u2 ON c2.userId = u2.id
-        WHERE c1.postId = #{postId} AND c1.parentId IS NULL
+            LEFT JOIN account a1 ON c1.accountId = a1.id
+            LEFT JOIN account a2 ON c2.accountId = a2.id
+        WHERE c1.postId = #{id} AND c1.parentId IS NULL
         ORDER BY c1.createdAt, c2.createdAt;
     </select>
 
-    <select id="selectUserById" parameterType="int" resultMap="UserDTOResultMap">
+    <select id="selectAccountById" parameterType="int" resultMap="AccountDtoResultMap">
         SELECT id, nickname, name, password, status, createdAt, updatedAt
-        FROM user
+        FROM account
         WHERE id = #{id}
     </select>
 
-    <resultMap id="UserDTOResultMap" type="com.community.user.application.dto.UserDTO">
+    <resultMap id="AccountDtoResultMap" type="com.community.account.application.dto.AccountDto">
         <id property="id" column="id" />
         <result property="nickname" column="nickname" />
         <result property="name" column="name" />
@@ -46,30 +46,30 @@
         <result property="updatedAt" column="updatedAt" />
     </resultMap>
 
-    <resultMap id="CommentResultMap" type="com.community.comment.application.dto.CommentDTO">
+    <resultMap id="CommentResultMap" type="com.community.comment.application.dto.CommentDto">
         <id property="id" column="id" />
         <result property="postId" column="postId" />
-        <result property="userId" column="userId" />
+        <result property="accountId" column="accountId" />
         <result property="parentId" column="parentId" />
         <result property="contents" column="contents" />
         <result property="status" column="status" />
         <result property="createdAt" column="createdAt" />
         <result property="updatedAt" column="updatedAt" />
 
-        <association property="writer" column="userId" javaType="com.community.user.application.dto.UserDTO" select="selectUserById" />
+        <association property="writer" column="accountId" javaType="com.community.account.application.dto.AccountDto" select="selectAccountById" />
 
-        <collection property="replyList" ofType="com.community.comment.application.dto.CommentDTO">
+        <collection property="replyList" ofType="com.community.comment.application.dto.CommentDto">
             <id property="id" column="replyId" />
             <result property="postId" column="replyPostId" />
-            <result property="userId" column="replyUserId" />
+            <result property="accountId" column="replyAccountId" />
             <result property="parentId" column="replyParentId" />
             <result property="contents" column="replyContents" />
             <result property="status" column="replyStatus" />
             <result property="createdAt" column="replyCreatedAt" />
             <result property="updatedAt" column="replyUpdatedAt" />
 
-            <!-- replyWriter의 모든 속성을 UserDTOResultMap과 연결 -->
-            <association property="writer" column="replyUserId" javaType="com.community.user.application.dto.UserDTO" select="selectUserById" />
+            <!-- replyWriter의 모든 속성을 AccountDtoResultMap과 연결 -->
+            <association property="writer" column="replyAccountId" javaType="com.community.account.application.dto.AccountDto" select="selectAccountById" />
         </collection>
     </resultMap>
 </mapper>

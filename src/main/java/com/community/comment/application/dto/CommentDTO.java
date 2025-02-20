@@ -3,8 +3,8 @@ package com.community.comment.application.dto;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import com.community.account.application.dto.AccountDto;
 import com.community.comment.domain.CommentStatus;
-import com.community.user.application.dto.UserDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,15 +19,15 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class CommentDTO {
+public class CommentDto {
 	private int id;
 	private int postId;
-	private int userId;
+	private int accountId;
 	private Integer parentId;
 	private String contents;
 	private CommentStatus status;
 	private ZonedDateTime createdAt;
 	private ZonedDateTime updatedAt;
-	private UserDTO writer;
-	private List<CommentDTO> replyList;
+	private AccountDto writer;
+	private List<CommentDto> replyList;
 }

@@ -57,7 +57,7 @@
 		    });
 		    
 			$.ajax({
-			    url: "/api/post/" + postId,
+			    url: "/api/post/auth/" + postId,
 			    type: "PUT",
 			    data: formData,
 		        processData: false,

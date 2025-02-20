@@ -2,8 +2,8 @@ package com.community.post.application.dto;
 
 import java.util.List;
 
-import com.community.common.presentation.dto.PaginationDTO;
-import com.community.post.domain.PostEntity;
+import com.community.common.presentation.dto.PaginationDto;
+import com.community.post.domain.Post;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +18,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecentPostsDTO {
-	private List<PostEntity> postList;
-	private PaginationDTO pagination;
+public class RecentPostsDto {
+	private List<Post> postList;
+	private PaginationDto pagination;
 }

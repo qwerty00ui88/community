@@ -2,39 +2,38 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <div class="container view-post-container">
 	<!-- 게시글 -->
-    <h2 class="post-title">${boardDTO.post.title}</h2>
+    <h2 class="post-title">${boardDto.post.title}</h2>
     <div class="post-meta text-muted mb-4">
         <span>작성자: 
 	        <c:choose>
-		        <c:when test="${boardDTO.writer.status == 'DELETED'}">
+		        <c:when test="${boardDto.writer.status == 'DELETED'}">
 		            <strong>탈퇴회원</strong>
 		        </c:when>
 		        <c:otherwise>
-		            <strong>${boardDTO.writer.nickname}</strong>
+		            <strong>${boardDto.writer.nickname}</strong>
 		        </c:otherwise>
 		    </c:choose>
         </span> | 
-        <span>작성일: <strong>${fn:substring(boardDTO.post.createdAt.toString(), 0, 10)}</strong></span>
-        <c:if test="${boardDTO.post.status == 'EDITED'}">
+        <span>작성일: <strong>${fn:substring(boardDto.post.createdAt.toString(), 0, 10)}</strong></span>
+        <c:if test="${boardDto.post.status == 'EDITED'}">
             <span class="text-muted">(edited)</span>
         </c:if>
-        | <span>조회수: <strong>${boardDTO.post.views}</strong></span>
+        | <span>조회수: <strong>${boardDto.post.views}</strong></span>
     </div>
     
     <!-- 게시글 수정 및 삭제 버튼 -->
     <div class="text-right mb-4">
-	    <c:if test="${boardDTO.post.userId == LOGIN_USER_ID || (LOGIN_ADMIN_ID != null && boardDTO.post.userId == LOGIN_ADMIN_ID)}">
+    	<sec:authorize access="authentication.principal != null and authentication.principal != 'anonymousUser' and authentication.principal.id == ${boardDto.post.accountId} or hasRole('ROLE_ADMIN')">
 	        <button id="updatePostBtn" class="btn btn-outline-primary mr-2">게시글 수정</button>
-	    </c:if>
-	    <c:if test="${boardDTO.post.userId == LOGIN_USER_ID || LOGIN_ADMIN_ID != null}">
 	        <button id="deletePostBtn" class="btn btn-outline-danger">게시글 삭제</button>
-	    </c:if>
+	    </sec:authorize>
 	</div>
     <div class="post-content">
-		<c:forEach var="item" items="${boardDTO.fileList}">
+		<c:forEach var="item" items="${boardDto.fileList}">
 		    <c:choose>
 		    	<c:when test="${fn:contains(item.metadata, 'image/')}">
 		            <img src="${item.url}" alt="Image" style="max-width: 100%; height: auto;">
@@ -44,14 +43,14 @@
 		        </c:otherwise>
 			</c:choose>
 		</c:forEach>
-        <p>${boardDTO.post.contents}</p>
+        <p>${boardDto.post.contents}</p>
     </div>
     <hr>
     
     <!-- 댓글 및 대댓글 -->
     <div class="comments">
         <h5>댓글</h5>
-        <c:forEach items="${boardDTO.commentList}" var="comment">
+        <c:forEach items="${boardDto.commentList}" var="comment">
             <div class="comment mb-3" data-comment-id="${comment.id}">
                 <div class="comment-meta text-muted">
                     <span>
@@ -70,12 +69,10 @@
                     </c:if>
                     <!-- 댓글 수정 및 삭제 버튼 -->
                     <div class="float-right">
-					    <c:if test="${(comment.writer.id == LOGIN_USER_ID || comment.writer.id == LOGIN_ADMIN_ID) && comment.status != 'DELETED'}">
+                    	<sec:authorize access="authentication.principal != null and authentication.principal != 'anonymousUser' and '${comment.status}' != 'DELETED' and (authentication.principal.id == ${comment.writer.id} or hasRole('ROLE_ADMIN'))">
 					        <button class="btn btn-sm text-secondary edit-comment-btn" data-comment-id="${comment.id}">수정</button>
-					    </c:if>
-					    <c:if test="${(comment.writer.id == LOGIN_USER_ID || LOGIN_ADMIN_ID != null) && comment.status != 'DELETED'}">
 					        <button class="btn btn-sm text-danger delete-comment-btn" data-comment-id="${comment.id}">삭제</button>
-					    </c:if>
+						</sec:authorize>
 					</div>
                 </div>
                 <p class="comment-content">
@@ -116,12 +113,10 @@
                                 </c:if>
                                 <!-- 대댓글 수정 및 삭제 버튼 -->
                                 <div class="float-right">
-								    <c:if test="${(reply.writer.id == LOGIN_USER_ID || reply.writer.id == LOGIN_ADMIN_ID) && reply.status != 'DELETED'}">
+								    <sec:authorize access="authentication.principal != null and authentication.principal != 'anonymousUser' and '${reply.status}' != 'DELETED' and (authentication.principal.id == ${reply.writer.id} or hasRole('ROLE_ADMIN'))">
 								        <button class="btn btn-sm text-secondary edit-reply-btn" data-reply-id="${reply.id}">수정</button>
-								    </c:if>
-								    <c:if test="${(reply.writer.id == LOGIN_USER_ID || LOGIN_ADMIN_ID != null) && reply.status != 'DELETED'}">
-								        <button class="btn btn-sm text-danger delete-reply-btn" data-reply-id="${reply.id}">삭제</button>
-								    </c:if>
+										<button class="btn btn-sm text-danger delete-reply-btn" data-reply-id="${reply.id}">삭제</button>
+								    </sec:authorize>
 								</div>
                             </div>
                             <p class="reply-content">
@@ -169,7 +164,7 @@
 
 <script>
 $(document).ready(function() {	
-    const postId = ${boardDTO.post.id};
+    const postId = ${boardDto.post.id};
     const isAdmin = ${LOGIN_ADMIN_ID != null};    
     
     // 게시글 수정
@@ -181,7 +176,7 @@ $(document).ready(function() {
     $("#deletePostBtn").on("click", function() {
         if (confirm("정말로 게시글을 삭제하시겠습니까?")) {
             $.ajax({
-                url: isAdmin ? `/api/post/admin/\${postId}` : `/api/post/\${postId}`,
+                url: `/api/post/auth/\${postId}`,
                 type: "DELETE",
                 success: function(response) {
                     alert("게시글이 성공적으로 삭제되었습니다.");
@@ -206,7 +201,7 @@ $(document).ready(function() {
             return;
         }
 
-        $.post("/api/comment", {
+        $.post("/api/comment/auth", {
             "parentId": parentId,
             "contents": content,
             "postId": postId
@@ -244,7 +239,7 @@ $(document).ready(function() {
         
         if (confirm("정말로 댓글을 삭제하시겠습니까?")) {
             $.ajax({
-                url: isAdmin ? `/api/comment/admin/\${commentId}` : `/api/comment/\${commentId}`,
+                url: `/api/comment/auth/\${commentId}`,
                 type: "DELETE",
                 success: function(response) {
                     alert("댓글이 성공적으로 삭제되었습니다.");
@@ -262,7 +257,7 @@ $(document).ready(function() {
         const replyId = $(this).data("reply-id");
         if (confirm("정말로 대댓글을 삭제하시겠습니까?")) {
             $.ajax({
-                url: isAdmin ? `/api/comment/admin/\${replyId}` : `/api/comment/\${replyId}`,
+                url: `/api/comment/auth/\${replyId}`,
                 type: "DELETE",
                 success: function(response) {
                     alert("대댓글이 성공적으로 삭제되었습니다.");
@@ -308,7 +303,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: "/api/comment/" + commentId,
+            url: "/api/comment/auth/" + commentId,
             type: "PUT",
             data: {
                 "contents": newContent
@@ -334,7 +329,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: "/api/comment/" + replyId,
+            url: "/api/comment/auth/" + replyId,
             type: "PUT",
             data: {
                 "contents": newReplyContent
