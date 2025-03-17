@@ -1,11 +1,13 @@
 package com.community.post.application;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,30 +75,41 @@ public class PostService {
 		return postRepository.findTop10ByStatusNotAndCategoryIdInOrderByViewsDesc(status, categoryIdList);
 	}
 
-	public Page<Post> getPostListByStatusNotOrderByCreatedAtDesc(PostStatus status, Pageable pageable) {
-		List<Category> categoryList = categoryRepository.findByStatus(CategoryStatus.ACTIVE);
-		List<Integer> categoryIdList = categoryList.stream().map(Category::getId).collect(Collectors.toList());
-		return postRepository.findByStatusNotAndCategoryIdInOrderByCreatedAtDesc(status, categoryIdList, pageable);
-	}
-
-	public Page<Post> getPostsByCategoryIdAndStatusNotOrderByCreatedAtDesc(int categoryId, PostStatus status,
+	@Async
+	public CompletableFuture<Page<Post>> getPostListByStatusNotOrderByCreatedAtDesc(PostStatus status,
 			Pageable pageable) {
-		categoryRepository.findByIdAndStatus(categoryId, CategoryStatus.ACTIVE)
-				.orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
-		return postRepository.findByCategoryIdAndStatusNotOrderByCreatedAtDesc(categoryId, status, pageable);
+		return CompletableFuture.supplyAsync(() -> {
+			List<Category> categoryList = categoryRepository.findByStatus(CategoryStatus.ACTIVE);
+			List<Integer> categoryIdList = categoryList.stream().parallel().map(Category::getId)
+					.collect(Collectors.toList());
+			return postRepository.findByStatusNotAndCategoryIdInOrderByCreatedAtDesc(status, categoryIdList, pageable);
+		});
 	}
 
-	public Page<Post> getPostListByKeyword(String field, String keyword, Pageable pageable) {
-		if (field.equals("title")) {
-			return postRepository.findByTitleContainingAndStatusNot(keyword, PostStatus.DELETED, pageable);
-		} else if (field.equals("contents")) {
-			return postRepository.findByContentsContainingAndStatusNot(keyword, PostStatus.DELETED, pageable);
-		} else if (field.equals("nickname")) {
-			List<Account> accountList = accountRepository.findByNicknameContaining(keyword);
-			List<Integer> accountIdList = accountList.stream().map(Account::getId).collect(Collectors.toList());
-			return postRepository.findByAccountIdInAndStatusNot(accountIdList, PostStatus.DELETED, pageable);
-		}
-		return Page.empty();
+	@Async
+	public CompletableFuture<Page<Post>> getPostsByCategoryIdAndStatusNotOrderByCreatedAtDesc(int categoryId,
+			PostStatus status, Pageable pageable) {
+		return CompletableFuture.supplyAsync(() -> {
+			categoryRepository.findByIdAndStatus(categoryId, CategoryStatus.ACTIVE)
+					.orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다."));
+			return postRepository.findByCategoryIdAndStatusNotOrderByCreatedAtDesc(categoryId, status, pageable);
+		});
+	}
+
+	@Async
+	public CompletableFuture<Page<Post>> getPostListByKeyword(String field, String keyword, Pageable pageable) {
+		return CompletableFuture.supplyAsync(() -> {
+			if (field.equals("title")) {
+				return postRepository.findByTitleContainingAndStatusNot(keyword, PostStatus.DELETED, pageable);
+			} else if (field.equals("contents")) {
+				return postRepository.findByContentsContainingAndStatusNot(keyword, PostStatus.DELETED, pageable);
+			} else if (field.equals("nickname")) {
+				List<Account> accountList = accountRepository.findByNicknameContaining(keyword);
+				List<Integer> accountIdList = accountList.stream().map(Account::getId).collect(Collectors.toList());
+				return postRepository.findByAccountIdInAndStatusNot(accountIdList, PostStatus.DELETED, pageable);
+			}
+			return Page.empty();
+		});
 	}
 
 	// 게시글 수정

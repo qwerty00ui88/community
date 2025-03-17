@@ -1,5 +1,8 @@
 package com.community.category.presentation;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +18,7 @@ import com.community.category.domain.Category;
 import com.community.category.domain.CategoryStatus;
 import com.community.common.application.PaginationService;
 import com.community.post.application.PostService;
+import com.community.post.application.dto.PostDto;
 import com.community.post.application.dto.RecentPostsDto;
 import com.community.post.domain.Post;
 import com.community.post.domain.PostStatus;
@@ -45,14 +49,13 @@ public class CategoryController {
 	@GetMapping
 	public String detail(@RequestParam("categoryId") int categoryId,
 			@RequestParam(name = "page", defaultValue = "0") int page,
-			@RequestParam(name = "size", defaultValue = "10") int size, Model model) {
+			@RequestParam(name = "size", defaultValue = "10") int size, Model model) throws Exception {
 		Pageable pageable = PageRequest.of(page, size);
-		Page<Post> postPage = postService.getPostsByCategoryIdAndStatusNotOrderByCreatedAtDesc(categoryId,
-				PostStatus.DELETED, pageable);
-		RecentPostsDto recentPostsDto = new RecentPostsDto(postPage.getContent(),
-				paginationService.getPaginationDetails(postPage));
-
+		Page<Post> postPage = postService
+				.getPostsByCategoryIdAndStatusNotOrderByCreatedAtDesc(categoryId, PostStatus.DELETED, pageable).get();
 		Category category = categoryService.getCategoryByIdAndStatusNot(categoryId, CategoryStatus.DELETED);
+		List<PostDto> postList = postPage.getContent().stream().map(PostDto::new).collect(Collectors.toList());
+		RecentPostsDto recentPostsDto = new RecentPostsDto(postList, paginationService.getPaginationDetails(postPage));
 		model.addAttribute("title", category.getName());
 		model.addAttribute("categoryId", category.getId());
 		model.addAttribute("postList", recentPostsDto);

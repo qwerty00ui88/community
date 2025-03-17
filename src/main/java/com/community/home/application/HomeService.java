@@ -1,8 +1,12 @@
 package com.community.home.application;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.community.category.domain.CategoryRepository;
@@ -11,6 +15,7 @@ import com.community.common.PageProcessingException;
 import com.community.common.application.PaginationService;
 import com.community.home.application.dto.HomeDto;
 import com.community.post.application.PostService;
+import com.community.post.application.dto.PostDto;
 import com.community.post.application.dto.RecentPostsDto;
 import com.community.post.domain.Post;
 import com.community.post.domain.PostStatus;
@@ -27,26 +32,34 @@ public class HomeService {
 	@Autowired
 	private PaginationService paginationService;
 
-	public HomeDto generateHomeView(Pageable pageable) {
+	@Async
+	public CompletableFuture<HomeDto> generateHomeView(Pageable pageable) {
 		HomeDto homeDto = new HomeDto();
 		try {
-			// 홈 표시 카테고리 리스트
-			homeDto.setShowOnHomeCategoryList(
-					categoryRepository.findByStatusAndShowOnHome(CategoryStatus.ACTIVE, true));
+			CompletableFuture.runAsync(() -> {
+				homeDto.setShowOnHomeCategoryList(
+						categoryRepository.findByStatusAndShowOnHome(CategoryStatus.ACTIVE, true));
+			});
+			CompletableFuture<RecentPostsDto> recentPostsFuture = postService
+					.getPostListByStatusNotOrderByCreatedAtDesc(PostStatus.DELETED, pageable).thenApply(postPage -> {
+						List<PostDto> postList = postPage.getContent().parallelStream().map(PostDto::new)
+								.collect(Collectors.toList());
+						return new RecentPostsDto(postList, paginationService.getPaginationDetails(postPage));
+					});
+			CompletableFuture<List<Post>> mostViewedPostsFuture = CompletableFuture
+					.supplyAsync(() -> postService.getPostListTop10ByStatusNotOrderByViewsDesc(PostStatus.DELETED));
 
-			// 전체 최신 + 페이징
-			Page<Post> postPage = postService.getPostListByStatusNotOrderByCreatedAtDesc(PostStatus.DELETED, pageable);
-			RecentPostsDto recentPostsDto = new RecentPostsDto(postPage.getContent(),
-					paginationService.getPaginationDetails(postPage));
-			homeDto.setRecentPosts(recentPostsDto);
-
-			// 조회수 순으로 정렬된 게시물
-			homeDto.setMostViewedPosts(postService.getPostListTop10ByStatusNotOrderByViewsDesc(PostStatus.DELETED));
-
+			return CompletableFuture.allOf(recentPostsFuture, mostViewedPostsFuture).thenApply(v -> {
+				try {
+					homeDto.setRecentPosts(recentPostsFuture.get());
+					homeDto.setMostViewedPosts(mostViewedPostsFuture.get());
+				} catch (Exception e) {
+					throw new PageProcessingException("홈 화면 생성 중 오류 발생");
+				}
+				return homeDto;
+			});
 		} catch (Exception e) {
-			throw new PageProcessingException("홈 화면 생성 중 오류가 발생했습니다.");
+			throw new PageProcessingException("홈 화면 생성 중 오류 발생");
 		}
-
-		return homeDto;
 	}
 }

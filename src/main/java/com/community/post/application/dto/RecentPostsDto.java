@@ -3,7 +3,6 @@ package com.community.post.application.dto;
 import java.util.List;
 
 import com.community.common.presentation.dto.PaginationDto;
-import com.community.post.domain.Post;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +18,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecentPostsDto {
-	private List<Post> postList;
+	private List<PostDto> postList;
 	private PaginationDto pagination;
 }

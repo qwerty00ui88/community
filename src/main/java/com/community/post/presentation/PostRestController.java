@@ -1,14 +1,17 @@
 package com.community.post.presentation;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.parameters.P;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +26,7 @@ import com.community.account.application.dto.AccountDto;
 import com.community.common.application.PaginationService;
 import com.community.common.presentation.dto.CommonResponse;
 import com.community.post.application.PostService;
+import com.community.post.application.dto.PostDto;
 import com.community.post.application.dto.RecentPostsDto;
 import com.community.post.domain.Post;
 import com.community.post.domain.PostStatus;
@@ -42,37 +46,43 @@ public class PostRestController {
 	private PostService postService;
 
 	// 게시글 조회
+	@Async
 	@GetMapping("/public")
 	@Operation(summary = "게시글 조회")
-	public ResponseEntity<CommonResponse<RecentPostsDto>> getPostListByCategoryId(
+	public CompletableFuture<ResponseEntity<CommonResponse<RecentPostsDto>>> getPostListByCategoryId(
 			@RequestParam("categoryId") int categoryId, @RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "size", defaultValue = "10") int size) {
 		Pageable pageable = PageRequest.of(page, size);
-		Page<Post> postPage = null;
-		if (categoryId == 0) {
-			postPage = postService.getPostListByStatusNotOrderByCreatedAtDesc(PostStatus.DELETED, pageable);
-		} else {
-			postPage = postService.getPostsByCategoryIdAndStatusNotOrderByCreatedAtDesc(categoryId, PostStatus.DELETED,
-					pageable);
-		}
-		RecentPostsDto recentPostsDto = new RecentPostsDto(postPage.getContent(),
-				paginationService.getPaginationDetails(postPage));
-		CommonResponse<RecentPostsDto> commonResponse = CommonResponse.success("게시글 조회 성공", recentPostsDto);
-		return ResponseEntity.ok(commonResponse);
+		return (categoryId == 0 ? postService.getPostListByStatusNotOrderByCreatedAtDesc(PostStatus.DELETED, pageable)
+				: postService.getPostsByCategoryIdAndStatusNotOrderByCreatedAtDesc(categoryId, PostStatus.DELETED,
+						pageable))
+				.thenApply(postPage -> {
+					List<PostDto> postList = postPage.getContent().parallelStream().map(PostDto::new)
+							.collect(Collectors.toList());
+					RecentPostsDto recentPostsDto = new RecentPostsDto(postList,
+							paginationService.getPaginationDetails(postPage));
+					CommonResponse<RecentPostsDto> commonResponse = CommonResponse.success("게시글 조회 성공", recentPostsDto);
+					return ResponseEntity.ok(commonResponse);
+				});
 	}
 
 	// 게시글 검색
+	@Async
 	@GetMapping("/public/search")
 	@Operation(summary = "게시글 검색")
-	public ResponseEntity<CommonResponse<RecentPostsDto>> getPostSearchResults(@RequestParam("field") String field,
-			@RequestParam("keyword") String keyword, @RequestParam(name = "page", defaultValue = "0") int page,
-			@RequestParam(name = "size", defaultValue = "10") int size, Model model) {
+	public CompletableFuture<ResponseEntity<CommonResponse<RecentPostsDto>>> getPostSearchResults(
+			@RequestParam("field") String field, @RequestParam("keyword") String keyword,
+			@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "size", defaultValue = "10") int size) {
 		Pageable pageable = PageRequest.of(page, size);
-		Page<Post> postPage = postService.getPostListByKeyword(field, keyword, pageable);
-		RecentPostsDto recentPostsDto = new RecentPostsDto(postPage.getContent(),
-				paginationService.getPaginationDetails(postPage));
-		CommonResponse<RecentPostsDto> commonResponse = CommonResponse.success("게시글 조회 성공", recentPostsDto);
-		return ResponseEntity.ok(commonResponse);
+		return postService.getPostListByKeyword(field, keyword, pageable).thenApply(postPage -> {
+			List<PostDto> postList = postPage.getContent().parallelStream().map(PostDto::new)
+					.collect(Collectors.toList());
+			RecentPostsDto recentPostsDto = new RecentPostsDto(postList,
+					paginationService.getPaginationDetails(postPage));
+			CommonResponse<RecentPostsDto> commonResponse = CommonResponse.success("게시글 조회 성공", recentPostsDto);
+			return ResponseEntity.ok(commonResponse);
+		});
 	}
 
 	// 게시글 생성

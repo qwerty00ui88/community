@@ -24,10 +24,13 @@ public class HomeController {
 	public String homeView(@RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "size", defaultValue = "10") int size, Model model, HttpSession session) {
 		Pageable pageable = PageRequest.of(page, size);
-		HomeDto homeDto = homeService.generateHomeView(pageable);
-		model.addAttribute("homeDto", homeDto);
-		model.addAttribute("viewName", "include/home");
+		try {
+			HomeDto homeDto = homeService.generateHomeView(pageable).get();
+			model.addAttribute("homeDto", homeDto);
+			model.addAttribute("viewName", "include/home");
+		} catch (Exception e) {
+			throw new RuntimeException("홈 화면 생성 중 오류 발생", e);
+		}
 		return "template/layout";
 	}
-
 }
