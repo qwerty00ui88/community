@@ -18,6 +18,8 @@ import com.community.category.InvalidCategoryException;
 import com.community.comment.CommentNotFoundException;
 import com.community.comment.InvalidCommentException;
 import com.community.common.presentation.dto.CommonResponse;
+import com.community.file.FileDeleteException;
+import com.community.file.FileUploadException;
 import com.community.post.InvalidPostException;
 import com.community.post.PostNotFoundException;
 
@@ -52,7 +54,8 @@ public class GlobalExceptionHandler {
 		return mav;
 	}
 
-	@ExceptionHandler({ InternalServerErrorException.class, PageProcessingException.class })
+	@ExceptionHandler({ InternalServerErrorException.class, PageProcessingException.class, FileUploadException.class,
+			FileDeleteException.class })
 	public ModelAndView handleInternalServerErrorException(InternalServerErrorException ex,
 			HttpServletRequest request) {
 		request.setAttribute("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -66,7 +69,7 @@ public class GlobalExceptionHandler {
 
 	// 에러 코드 반환
 	@ExceptionHandler({ PasswordMismatchException.class, InvalidPostException.class, InvalidCommentException.class,
-			InvalidCategoryException.class, })
+			InvalidCategoryException.class })
 	public ResponseEntity<CommonResponse<Void>> handleBadRequestException(RuntimeException ex,
 			HttpServletRequest request) {
 		logRequestDetails(request);
