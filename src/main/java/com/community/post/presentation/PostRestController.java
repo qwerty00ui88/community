@@ -1,5 +1,6 @@
 package com.community.post.presentation;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -46,7 +47,6 @@ public class PostRestController {
 	private PostService postService;
 
 	// 게시글 조회
-	@Async
 	@GetMapping("/public")
 	@Operation(summary = "게시글 조회")
 	public CompletableFuture<ResponseEntity<CommonResponse<RecentPostsDto>>> getPostListByCategoryId(
@@ -58,6 +58,7 @@ public class PostRestController {
 						pageable))
 				.thenApply(postPage -> {
 					List<PostDto> postList = postPage.getContent().parallelStream().map(PostDto::new)
+							.sorted(Comparator.comparing(PostDto::getCreatedAt).reversed())
 							.collect(Collectors.toList());
 					RecentPostsDto recentPostsDto = new RecentPostsDto(postList,
 							paginationService.getPaginationDetails(postPage));
@@ -105,7 +106,7 @@ public class PostRestController {
 			@RequestParam("categoryId") int categoryId, @RequestParam("title") String title,
 			@RequestParam("contents") String contents,
 			@RequestParam(name = "newFiles", required = false) MultipartFile[] newFiles,
-			@RequestParam(name = "removedFiles", required = false) Integer[] removedFiles) {
+			@RequestParam(name = "removedFiles", required = false) List<Integer> removedFiles) {
 		Post post = postService.updatePostById(postId, categoryId, title, contents, newFiles, removedFiles);
 		CommonResponse<Post> commonResponse = CommonResponse.success("게시글 수정 성공", post);
 		return ResponseEntity.ok(commonResponse);

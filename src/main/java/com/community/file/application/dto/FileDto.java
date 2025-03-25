@@ -1,7 +1,8 @@
 package com.community.file.application.dto;
 
 import java.time.ZonedDateTime;
-import java.util.Map;
+
+import com.community.file.domain.File;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @Setter
 @ToString
@@ -23,7 +24,11 @@ public class FileDto {
 	private Integer domainId;
 	private String type;
 	private Long size;
-	private Map<String, String> metadata;
+	private String metadata;
 	private ZonedDateTime createdAt;
 	private ZonedDateTime updatedAt;
+
+	public File toEntity() {
+		return File.builder().domain(domain).domainId(domainId).type(type).size(size).metadata(metadata).build();
+	}
 }

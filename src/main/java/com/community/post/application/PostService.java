@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.community.account.domain.Account;
@@ -18,6 +18,7 @@ import com.community.category.domain.Category;
 import com.community.category.domain.CategoryRepository;
 import com.community.category.domain.CategoryStatus;
 import com.community.file.application.FileService;
+import com.community.file.application.dto.FileDto;
 import com.community.post.InvalidPostException;
 import com.community.post.PostNotFoundException;
 import com.community.post.domain.Post;
@@ -40,6 +41,7 @@ public class PostService {
 	private FileService fileService;
 
 	// 게시글 생성
+	@Transactional
 	public Post createPost(Integer accountId, Integer categoryId, String title, String contents,
 			MultipartFile[] files) {
 		if (!categoryRepository.existsById(categoryId)) {
@@ -51,8 +53,10 @@ public class PostService {
 		if (contents == null || contents.trim().isEmpty()) {
 			throw new InvalidPostException("게시글 내용을 입력하세요.");
 		}
+		// post 테이블 저장
 		Post post = postRepository.save(
 				Post.builder().accountId(accountId).categoryId(categoryId).title(title).contents(contents).build());
+		// 파일 저장
 		if (files != null && files.length > 0) {
 			fileService.uploadFiles(files, "post", post.getId());
 		}
@@ -75,7 +79,6 @@ public class PostService {
 		return postRepository.findTop10ByStatusNotAndCategoryIdInOrderByViewsDesc(status, categoryIdList);
 	}
 
-	@Async
 	public CompletableFuture<Page<Post>> getPostListByStatusNotOrderByCreatedAtDesc(PostStatus status,
 			Pageable pageable) {
 		return CompletableFuture.supplyAsync(() -> {
@@ -86,7 +89,6 @@ public class PostService {
 		});
 	}
 
-	@Async
 	public CompletableFuture<Page<Post>> getPostsByCategoryIdAndStatusNotOrderByCreatedAtDesc(int categoryId,
 			PostStatus status, Pageable pageable) {
 		return CompletableFuture.supplyAsync(() -> {
@@ -96,7 +98,6 @@ public class PostService {
 		});
 	}
 
-	@Async
 	public CompletableFuture<Page<Post>> getPostListByKeyword(String field, String keyword, Pageable pageable) {
 		return CompletableFuture.supplyAsync(() -> {
 			if (field.equals("title")) {
@@ -114,7 +115,7 @@ public class PostService {
 
 	// 게시글 수정
 	public Post updatePostById(int postId, Integer categoryId, String title, String contents, MultipartFile[] newFiles,
-			Integer[] removedFiles) {
+			List<Integer> removedFiles) {
 		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
 		if (post.getStatus() != PostStatus.DELETED) {
 			post = post.toBuilder().categoryId(categoryId).title(title).contents(contents).status(PostStatus.EDITED)
@@ -124,7 +125,7 @@ public class PostService {
 		if (newFiles != null && newFiles.length > 0) {
 			fileService.uploadFiles(newFiles, "post", post.getId());
 		}
-		if (removedFiles != null && removedFiles.length > 0) {
+		if (removedFiles != null && removedFiles.size() > 0) {
 			fileService.deleteFiles(removedFiles);
 		}
 		return post;
